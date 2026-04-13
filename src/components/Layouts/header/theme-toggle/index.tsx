@@ -1,22 +1,24 @@
+"use client";
+import { useLanguage } from "@/common/LanguageContext";
 import { cn } from "@/lib/utils";
-import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
-import { Moon, Sun } from "./icons";
+import { English, Gujrati } from "./icons";
 
 const THEMES = [
   {
-    name: "light",
-    Icon: Sun,
+    name: "en",
+    Icon: English,
   },
   {
-    name: "dark",
-    Icon: Moon,
+    name: "guj",
+    Icon: Gujrati,
   },
 ];
 
 export function ThemeToggleSwitch() {
-  const { setTheme, theme } = useTheme();
   const [mounted, setMounted] = useState(false);
+
+  const { language, setLanguage } = useLanguage();
 
   useEffect(() => {
     setMounted(true);
@@ -28,23 +30,28 @@ export function ThemeToggleSwitch() {
 
   return (
     <button
-      onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+      onClick={() => setLanguage(language === "en" ? "guj" : "en")}
       className="group rounded-full bg-gray-3 p-[5px] text-[#111928] outline-1 outline-primary focus-visible:outline dark:bg-[#020D1A] dark:text-current"
     >
       <span className="sr-only">
-        Switch to {theme === "light" ? "dark" : "light"} mode
+        Switch to {language === "en" ? "guj" : "en"} mode
       </span>
 
       <span aria-hidden className="relative flex gap-2.5">
         {/* Indicator */}
-        <span className="absolute size-[38px] rounded-full border border-gray-200 bg-white transition-all dark:translate-x-[48px] dark:border-none dark:bg-dark-2 dark:group-hover:bg-dark-3" />
+        <span
+          className={cn(
+            "absolute size-[38px] rounded-full border border-gray-200 bg-white transition-all",
+            language === "guj" ? "translate-x-[48px]" : "translate-x-0",
+          )}
+        />
 
         {THEMES.map(({ name, Icon }) => (
           <span
             key={name}
             className={cn(
               "relative grid size-[38px] place-items-center rounded-full",
-              name === "dark" && "dark:text-white",
+              name === "en" && "dark:text-white",
             )}
           >
             <Icon />
