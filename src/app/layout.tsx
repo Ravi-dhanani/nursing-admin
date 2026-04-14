@@ -15,11 +15,11 @@ import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | NextAdmin - Next.js Dashboard Kit",
-    default: "NextAdmin - Next.js Dashboard Kit",
+    template: "%s |My Nursing App",
+    default: "My Nursing App - Learn, Practice & Succeed",
   },
   description:
-    "Next.js admin dashboard toolkit with 200+ templates, UI components, and integrations for fast dashboard development.",
+    "Nursing Study Hub offers free and premium courses for GNM, ANM, and BSc Nursing students. Practice MCQs, watch video lectures, and access study notes in one place.",
 };
 
 export default function RootLayout({ children }: PropsWithChildren) {

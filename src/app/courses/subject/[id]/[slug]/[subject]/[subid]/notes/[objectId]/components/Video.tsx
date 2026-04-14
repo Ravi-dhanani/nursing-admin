@@ -33,7 +33,6 @@ export default function VideoPage() {
       if (!selectedCategory) return;
 
       const data = await fetchVideos(selectedCategory);
-      console.log(data);
       setVideos(data);
 
       // auto play first video

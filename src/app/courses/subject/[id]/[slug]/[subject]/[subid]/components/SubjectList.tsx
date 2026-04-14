@@ -11,13 +11,19 @@ type SubjectItem = {
 
 interface SubjectListProps {
   id: string;
+  slug: string;
+  subject: string;
+  subid: string | undefined;
 }
 
-export default function SubjectList({ id }: SubjectListProps) {
+export default function SubjectList({
+  id,
+  slug,
+  subject: subjectName,
+  subid,
+}: SubjectListProps) {
   const router = useRouter();
   const [subjects, setSubjects] = useState<SubjectItem[]>([]);
-
-  console.log(subjects);
 
   useEffect(() => {
     const loadCourses = async () => {
@@ -42,7 +48,9 @@ export default function SubjectList({ id }: SubjectListProps) {
             <div
               key={i}
               onClick={() => {
-                router.push(`/courses/notes/${subject.objectId}`);
+                router.push(
+                  `/courses/subject/${id}/${slug}/${subjectName}/${subid}/notes/${subject.objectId}`,
+                );
               }}
               className="flex h-24 cursor-pointer items-center justify-center rounded-md border p-2 text-center hover:bg-primary hover:text-white"
             >

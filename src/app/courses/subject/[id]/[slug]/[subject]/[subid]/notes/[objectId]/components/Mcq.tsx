@@ -104,7 +104,7 @@ export default function Mcq() {
             </div>
 
             {/* ANSWER BUTTON */}
-            <div className="mt-3 flex w-full items-center justify-end gap-4">
+            <div className="mt-3 flex w-full items-center justify-start gap-4">
               <button
                 onClick={() =>
                   setShowAnswer((prev) => ({

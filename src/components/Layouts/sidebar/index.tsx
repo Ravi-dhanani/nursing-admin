@@ -64,7 +64,7 @@ export function Sidebar() {
         inert={!isOpen}
       >
         <div className="flex h-full flex-col py-10 pl-[25px] pr-[7px]">
-          <div className="relative pr-4.5">
+          <div className="relative flex justify-center pr-4.5">
             <Link
               href={"/"}
               onClick={() => isMobile && toggleSidebar()}

@@ -34,9 +34,12 @@ export function Header() {
 
       <div className="max-xl:hidden">
         <h1 className="mb-0.5 text-heading-5 font-bold text-dark dark:text-white">
-          Dashboard
+          My Nursing App
         </h1>
-        <p className="font-medium">Residency Management System</p>
+        <p className="font-medium">
+          {" "}
+          MCQs • Video Lectures • Notes (Free & Paid)
+        </p>
       </div>
 
       <div className="flex flex-1 items-center justify-end gap-2 min-[375px]:gap-4">

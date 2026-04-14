@@ -40,7 +40,7 @@ export default async function SubjectPage(props: { params: paramsType }) {
       </div>
 
       {/* RIGHT SIDE */}
-      <SubjectList id={id} />
+      <SubjectList id={id} slug={slug} subject={subject} subid={subid} />
     </div>
   );
 }

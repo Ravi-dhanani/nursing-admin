@@ -1,5 +1,5 @@
-export async function fetchVideoCategories(subjectId: string) {
-  if (!subjectId) return [];
+export async function fetchVideoCategories(subjectId?: string) {
+  if (!subjectId) return;
 
   const res = await fetch(`/api/video-category?id=${subjectId}`);
 

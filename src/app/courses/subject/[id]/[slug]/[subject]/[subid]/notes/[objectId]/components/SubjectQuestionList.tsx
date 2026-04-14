@@ -1,20 +1,39 @@
 "use client";
 
-import { tabs } from "@/services/tabs";
+import {
+  McqIcon,
+  SynofcycIcon,
+  VideoIcon,
+} from "@/app/profile/_components/icons";
+import { formatText } from "@/lib/utils";
 import { useState } from "react";
 import Mcq from "./Mcq";
 import Synofcyc from "./Synofcyc";
 import VideoPage from "./Video";
 
-export default function SubjectQuestionList() {
+interface SubjectQuestionListType {
+  courseName: string;
+  subjectName: string;
+}
+export default function SubjectQuestionList({
+  courseName,
+  subjectName,
+}: SubjectQuestionListType) {
   const [activeTab, setActiveTab] = useState("mcq");
+  const [tabs, setTabs] = useState<any[]>([
+    { id: "mcq", label: "MCQ", icon: <McqIcon /> },
+    { id: "video", label: "Video", icon: <VideoIcon /> },
+    { id: "synopsis", label: "Synopsis", icon: <SynofcycIcon /> },
+  ]);
 
   return (
     <div className="p-5">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">GNM Nursing Course</h1>
+        <h1 className="text-2xl font-bold text-gray-800">
+          {formatText(courseName)}
+        </h1>
         <p className="mt-1 text-sm text-gray-500">
-          Subject: Anatomy & Physiology
+          Subject: {formatText(subjectName)}
         </p>
       </div>
       {/* TAB HEADER */}
