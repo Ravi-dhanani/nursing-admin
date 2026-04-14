@@ -1,17 +1,35 @@
 "use client";
 
+import { CourseType } from "@/app/api/courses/route";
 import { useLanguage } from "@/common/LanguageContext";
 import { createSlug } from "@/lib/utils";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
-import { CourseType } from "./services/subject.service";
+import { useEffect, useState } from "react";
 
-export default function Courses({ courses }: { courses: CourseType[] }) {
+export default function Courses() {
   const router = useRouter();
 
   const [activeTag, setActiveTag] = useState<string>("");
 
   const { language } = useLanguage();
+
+  const [courses, setCourses] = useState<CourseType[]>([]);
+
+  useEffect(() => {
+    const loadCourses = async () => {
+      try {
+        const res = await fetch("/api/courses");
+
+        const data = await res.json();
+
+        setCourses(data);
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+      }
+    };
+
+    loadCourses();
+  }, []);
 
   const filteredCourses = courses?.filter(
     (item: CourseType) => item?.o9_course_tag === activeTag,
@@ -21,11 +39,11 @@ export default function Courses({ courses }: { courses: CourseType[] }) {
     ...new Set(courses.map((item: CourseType) => item.o9_course_tag)),
   ];
 
-  useMemo(() => {
+  useEffect(() => {
     if (uniqueTags.length > 0 && !activeTag) {
       setActiveTag(uniqueTags[0]);
     }
-  }, [uniqueTags]);
+  }, [uniqueTags, activeTag]);
 
   return (
     <div className="flex h-screen bg-gray-100">

@@ -1,4 +1,3 @@
-import { getSubjectsByCourseId } from "@/app/courses/services/subject.service";
 import NoData from "@/common/NoData";
 import { formatText } from "@/lib/utils";
 import { getPostById } from "./actions";
@@ -13,8 +12,6 @@ export type paramsType = Promise<{
 
 export default async function SubjectPage(props: { params: paramsType }) {
   const { id, slug, subject, subid } = await props.params;
-
-  const courseSubject = await getSubjectsByCourseId(id);
 
   const post = await getPostById(subid);
 
@@ -43,7 +40,7 @@ export default async function SubjectPage(props: { params: paramsType }) {
       </div>
 
       {/* RIGHT SIDE */}
-      <SubjectList subjects={courseSubject} />
+      <SubjectList id={id} />
     </div>
   );
 }

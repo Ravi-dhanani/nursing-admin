@@ -1,18 +1,80 @@
 "use client";
-import { useState } from "react";
-import { McqQuestion } from "../services/mcq.service";
+import { McqQuestion } from "@/app/api/mcq/route";
+import { useQuetionsContextHook } from "@/hooks/QuetionsHook";
+import { useEffect, useRef, useState } from "react";
 
-type Props = {
-  mcqQuestion: McqQuestion[];
-};
-
-export default function Mcq({ mcqQuestion }: Props) {
+export default function Mcq() {
   const [showAnswer, setShowAnswer] = useState<Record<string, boolean>>({});
+  const [questions, setQuestions] = useState<McqQuestion[]>([]);
+
   const [showDesc, setShowDesc] = useState<Record<string, boolean>>({});
+  const { paramsId } = useQuetionsContextHook();
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+
+  const loaderRef = useRef<HTMLDivElement | null>(null);
+
+  const loadMcq = async () => {
+    if (loading || !hasMore) return;
+
+    setLoading(true);
+
+    try {
+      const res = await fetch(`/api/mcq?id=${paramsId}&page=${page}&limit=20`);
+
+      const data = await res.json();
+
+      if (data.length === 0) {
+        setHasMore(false);
+      } else {
+        setQuestions((prev) => [...prev, ...data]); // ✅ append
+      }
+    } catch (error) {
+      console.error("Error fetching MCQ:", error);
+    }
+
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    setQuestions([]);
+    setPage(1);
+    setHasMore(true);
+  }, [paramsId]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loading) {
+          setPage((prev) => prev + 1); // ✅ load next page
+        }
+      },
+      {
+        threshold: 1,
+      },
+    );
+
+    if (loaderRef.current) {
+      observer.observe(loaderRef.current);
+    }
+
+    return () => {
+      if (loaderRef.current) {
+        observer.unobserve(loaderRef.current);
+      }
+    };
+  }, [loading, hasMore]);
+
+  useEffect(() => {
+    if (!paramsId) return; // ✅ important
+
+    loadMcq();
+  }, [paramsId, page]);
 
   return (
     <div className="space-y-6">
-      {mcqQuestion?.map((q, index) => {
+      {questions?.map((q, index) => {
         const options = [
           { key: "A", text: q.eng3_que_option_a },
           { key: "B", text: q.eng4_que_option_b },
@@ -86,6 +148,10 @@ export default function Mcq({ mcqQuestion }: Props) {
           </div>
         );
       })}
+      <div ref={loaderRef} className="py-6 text-center">
+        {loading && "Loading more..."}
+        {!hasMore && "No more questions"}
+      </div>
     </div>
   );
 }

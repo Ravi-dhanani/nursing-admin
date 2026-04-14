@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 type SubjectItem = {
   eng1_subject_name: string;
@@ -9,12 +10,30 @@ type SubjectItem = {
 };
 
 interface SubjectListProps {
-  subjects: SubjectItem[] | null | undefined;
+  id: string;
 }
 
-export default function SubjectList({ subjects }: SubjectListProps) {
+export default function SubjectList({ id }: SubjectListProps) {
   const router = useRouter();
+  const [subjects, setSubjects] = useState<SubjectItem[]>([]);
 
+  console.log(subjects);
+
+  useEffect(() => {
+    const loadCourses = async () => {
+      try {
+        const res = await fetch(`/api/subjects?courseId=${id}`);
+
+        const data = await res.json();
+
+        setSubjects(data?.data);
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+      }
+    };
+
+    loadCourses();
+  }, []);
   return (
     <div className="h-full w-3/5 overflow-y-auto">
       <div className="p-4">

@@ -1,4 +1,4 @@
-import Parse from "../../../components/parse";
+import Parse from "@/app/components/parse";
 
 export type CourseType = {
   objectId: string;
@@ -32,7 +32,7 @@ export type CourseType = {
   updatedAt: string;
 };
 
-export async function getCourses(): Promise<CourseType[]> {
+export async function GET() {
   const Course = Parse.Object.extend("AllCourses");
   const query = new Parse.Query(Course);
 
@@ -42,7 +42,7 @@ export async function getCourses(): Promise<CourseType[]> {
 
   const results = await query.find();
 
-  return results.map((item) => ({
+  const data = results.map((item) => ({
     objectId: item.id as string,
 
     eng1_course_name: item.get("eng1_course_name") as string,
@@ -73,4 +73,6 @@ export async function getCourses(): Promise<CourseType[]> {
     createdAt: item.createdAt?.toISOString() as string,
     updatedAt: item.updatedAt?.toISOString() as string,
   }));
+
+  return Response.json(data);
 }

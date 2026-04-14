@@ -2,15 +2,11 @@
 
 import { tabs } from "@/services/tabs";
 import { useState } from "react";
-import { McqQuestion } from "../services/mcq.service";
 import Mcq from "./Mcq";
 import Synofcyc from "./Synofcyc";
-import Video from "./Video";
+import VideoPage from "./Video";
 
-type Props = {
-  mcqList: McqQuestion[];
-};
-export default function SubjectQuestionList({ mcqList }: Props) {
+export default function SubjectQuestionList() {
   const [activeTab, setActiveTab] = useState("mcq");
 
   return (
@@ -22,7 +18,7 @@ export default function SubjectQuestionList({ mcqList }: Props) {
         </p>
       </div>
       {/* TAB HEADER */}
-      <div className="mb-5 inline-flex w-full gap-2 rounded-xl border-2 bg-white p-3">
+      <div className="mb-4 inline-flex w-full gap-2 rounded-xl border-2 bg-white p-3">
         {tabs.map((tab) => (
           <button
             key={tab.id}
@@ -42,8 +38,8 @@ export default function SubjectQuestionList({ mcqList }: Props) {
       {/* TAB CONTENT (Smooth Transition) */}
       <div className="relative h-[calc(100vh-200px)] overflow-y-auto">
         <div className="mt-4">
-          {activeTab === "mcq" && <Mcq mcqQuestion={mcqList} />}
-          {activeTab === "video" && <Video />}
+          {activeTab === "mcq" && <Mcq />}
+          {activeTab === "video" && <VideoPage />}
           {activeTab === "synofcyc" && <Synofcyc />}
         </div>
       </div>
