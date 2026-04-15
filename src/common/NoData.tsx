@@ -1,6 +1,6 @@
-export default function NoData() {
+export default function NoData({ title }: { title?: string }) {
   return (
-    <div className="flex flex-col items-center justify-center py-20 text-center">
+    <div className="flex flex-col items-center justify-center bg-white py-20 text-center">
       <svg
         width="180"
         height="180"
@@ -45,7 +45,9 @@ export default function NoData() {
         />
       </svg>
 
-      <h2 className="text-xl font-semibold text-gray-700">No Data Found</h2>
+      <h2 className="text-xl font-semibold text-gray-700">
+        {title ? title : "No Data Found"}
+      </h2>
 
       <p className="mt-2 text-gray-500">There is nothing to display here.</p>
     </div>

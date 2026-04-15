@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 
-type Language = "en" | "guj";
+type Language = "English" | "ગુજરાતી";
 
 type LanguageContextType = {
   language: Language;
@@ -12,7 +12,7 @@ type LanguageContextType = {
 const LanguageContext = createContext<LanguageContextType | null>(null);
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguageState] = useState<Language>("en");
+  const [language, setLanguageState] = useState<Language>("English");
 
   // ✅ Load from localStorage (client only)
   useEffect(() => {

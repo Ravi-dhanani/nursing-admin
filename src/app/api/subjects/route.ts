@@ -28,6 +28,7 @@ export async function GET(req: Request) {
       guj1_subject_name: item.get("guj1_subject_name") ?? "",
 
       a2_subject_number: item.get("a2_subject_number") ?? 0,
+      eng2_video_title: item.get("eng2_video_title") ?? "",
 
       eng2_synopsis_title: item.get("eng2_synopsis_title") ?? "",
       guj2_synopsis_title: item.get("guj2_synopsis_title") ?? "",

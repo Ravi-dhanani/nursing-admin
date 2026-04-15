@@ -6,11 +6,11 @@ import { English, Gujrati } from "./icons";
 
 const THEMES = [
   {
-    name: "en",
+    name: "English",
     Icon: English,
   },
   {
-    name: "guj",
+    name: "ગુજરાતી",
     Icon: Gujrati,
   },
 ];
@@ -28,36 +28,41 @@ export function ThemeToggleSwitch() {
     return null;
   }
 
+  const isGujarati = language === "ગુજરાતી";
+
   return (
     <button
-      onClick={() => setLanguage(language === "en" ? "guj" : "en")}
-      className="group rounded-full bg-gray-3 p-[5px] text-[#111928] outline-1 outline-primary focus-visible:outline dark:bg-[#020D1A] dark:text-current"
+      onClick={() => setLanguage(isGujarati ? "English" : "ગુજરાતી")}
+      className="relative w-[160px] rounded-full bg-gray-100 p-1.5"
     >
       <span className="sr-only">
-        Switch to {language === "en" ? "guj" : "en"} mode
+        Switch to {isGujarati ? "English" : "ગુજરાતી"}
       </span>
 
-      <span aria-hidden className="relative flex gap-2.5">
-        {/* Indicator */}
+      <div className="relative flex">
         <span
           className={cn(
-            "absolute size-[38px] rounded-full border border-gray-200 bg-white transition-all",
-            language === "guj" ? "translate-x-[48px]" : "translate-x-0",
+            "absolute left-0 top-0 h-full w-1/2 rounded-full bg-white shadow transition-transform duration-300",
+            isGujarati ? "translate-x-full" : "translate-x-0",
           )}
         />
 
-        {THEMES.map(({ name, Icon }) => (
-          <span
-            key={name}
-            className={cn(
-              "relative grid size-[38px] place-items-center rounded-full",
-              name === "en" && "dark:text-white",
-            )}
-          >
-            <Icon />
-          </span>
-        ))}
-      </span>
+        {THEMES.map(({ name }) => {
+          const isActive = language === name;
+
+          return (
+            <span
+              key={name}
+              className={cn(
+                "relative z-10 flex w-1/2 cursor-pointer items-center justify-center gap-1 rounded-full py-2 text-sm transition",
+                isActive ? "font-semibold text-primary" : "text-gray-500",
+              )}
+            >
+              {name}
+            </span>
+          );
+        })}
+      </div>
     </button>
   );
 }

@@ -6,25 +6,46 @@ import {
   VideoIcon,
 } from "@/app/profile/_components/icons";
 import { formatText } from "@/lib/utils";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Mcq from "./Mcq";
-import Synofcyc from "./Synofcyc";
+import Synopsis from "./Synopsis";
 import VideoPage from "./Video";
 
 interface SubjectQuestionListType {
   courseName: string;
-  subjectName: string;
+  subjectName: string | null;
 }
 export default function SubjectQuestionList({
   courseName,
   subjectName,
 }: SubjectQuestionListType) {
   const [activeTab, setActiveTab] = useState("mcq");
-  const [tabs, setTabs] = useState<any[]>([
-    { id: "mcq", label: "MCQ", icon: <McqIcon /> },
-    { id: "video", label: "Video", icon: <VideoIcon /> },
-    { id: "synopsis", label: "Synopsis", icon: <SynofcycIcon /> },
-  ]);
+  const [tabs, setTabs] = useState<any[]>([]);
+
+  useEffect(() => {
+    const videoTitle = localStorage.getItem("video_title");
+
+    const baseTabs = [
+      { id: "mcq", label: "MCQ", icon: <McqIcon /> },
+      { id: "synopsis", label: "Synopsis", icon: <SynofcycIcon /> },
+    ];
+
+    if (videoTitle) {
+      baseTabs.splice(1, 0, {
+        id: "video",
+        label: videoTitle,
+        icon: <VideoIcon />,
+      });
+    } else if (videoTitle !== null) {
+      baseTabs.splice(1, 0, {
+        id: "video",
+        label: "Video",
+        icon: <VideoIcon />,
+      });
+    }
+
+    setTabs(baseTabs);
+  }, []);
 
   return (
     <div className="p-5">
@@ -33,7 +54,7 @@ export default function SubjectQuestionList({
           {formatText(courseName)}
         </h1>
         <p className="mt-1 text-sm text-gray-500">
-          Subject: {formatText(subjectName)}
+          Subject: {formatText(subjectName ?? "")}
         </p>
       </div>
       {/* TAB HEADER */}
@@ -55,11 +76,11 @@ export default function SubjectQuestionList({
       </div>
 
       {/* TAB CONTENT (Smooth Transition) */}
-      <div className="relative h-[calc(100vh-200px)] overflow-y-auto">
+      <div className="relative h-full">
         <div className="mt-4">
           {activeTab === "mcq" && <Mcq />}
           {activeTab === "video" && <VideoPage />}
-          {activeTab === "synofcyc" && <Synofcyc />}
+          {activeTab === "synopsis" && <Synopsis />}
         </div>
       </div>
     </div>

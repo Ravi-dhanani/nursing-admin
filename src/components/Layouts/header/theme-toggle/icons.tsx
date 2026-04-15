@@ -16,7 +16,7 @@ export function English(props: SVGProps<SVGSVGElement>) {
         fontSize="20"
         fontFamily="Arial, sans-serif"
       >
-        En
+        English
       </text>
     </svg>
   );
@@ -38,7 +38,7 @@ export function Gujrati(props: SVGProps<SVGSVGElement>) {
         fontSize="20"
         fontFamily="Arial, sans-serif"
       >
-        અ
+        ગુજરાતી
       </text>
     </svg>
   );

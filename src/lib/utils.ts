@@ -16,5 +16,5 @@ export const createSlug = (text?: string): string => {
     .replace(/[^\w-]+/g, "");
 };
 
-export const formatText = (text: string) =>
-  text.replace(/-/g, " ").toUpperCase();
+export const formatText = (text?: string) =>
+  text ? text.replace(/-/g, " ").toUpperCase() : "";

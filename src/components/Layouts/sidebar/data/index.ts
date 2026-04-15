@@ -11,6 +11,12 @@ export const NAV_DATA = [
         icon: Icons.HomeIcon,
         items: [],
       },
+      {
+        title: "Subject",
+        url: "/subject",
+        icon: Icons.HomeIcon,
+        items: [],
+      },
     ],
   },
 

@@ -41,8 +41,8 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
 
-  const page = Number(searchParams.get("page") || 1);
-  const limit = Number(searchParams.get("limit") || 20);
+  const page = Math.max(1, Number(searchParams.get("page") || 1));
+  const limit = Math.max(1, Number(searchParams.get("limit") || 20));
 
   if (!id) {
     return Response.json({ error: "Missing id" }, { status: 400 });
@@ -52,10 +52,12 @@ export async function GET(req: Request) {
   const query = new Parse.Query(Mcq);
 
   query.equalTo("a1_subject_id", id);
+  query.ascending("a2_que_number"); // ✅ FIX
+
   query.limit(limit);
   query.skip((page - 1) * limit);
 
-  const results = await query.find();
+  const [results, total] = await Promise.all([query.find(), query.count()]);
 
   const data = results.map((item) => ({
     objectId: item.id ?? "",
@@ -84,6 +86,11 @@ export async function GET(req: Request) {
     createdAt: item.createdAt?.toISOString() ?? "",
     updatedAt: item.updatedAt?.toISOString() ?? "",
   }));
-
-  return Response.json(data);
+  return Response.json({
+    data,
+    total,
+    page,
+    limit,
+    hasMore: page * limit < total,
+  });
 }
