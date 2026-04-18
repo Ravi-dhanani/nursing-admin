@@ -1,5 +1,6 @@
 "use client";
 import { McqQuestion } from "@/app/api/mcq/route";
+import { useLanguage } from "@/common/LanguageContext";
 import Loading from "@/common/Loading";
 import NoData from "@/common/NoData";
 import { useQuetionsContextHook } from "@/hooks/QuetionsHook";
@@ -17,6 +18,8 @@ export default function Mcq() {
   const [hasMore, setHasMore] = useState(true);
 
   const loaderRef = useRef<HTMLDivElement | null>(null);
+
+  const { language } = useLanguage();
 
   const loadMcq = useCallback(
     async (isInitial: boolean = false) => {
@@ -45,17 +48,19 @@ export default function Mcq() {
     [paramsId, page, hasMore, loading],
   );
 
-  useEffect(() => {
-    if (!paramsId) return;
+  const hasFetched = useRef(false);
 
-    // Reset state
+  useEffect(() => {
+    if (!paramsId || hasFetched.current) return;
+
+    hasFetched.current = true;
+
     setQuestions([]);
     setPage(1);
     setHasMore(true);
     setShowAnswer({});
     setShowDesc({});
 
-    // Load first page immediately
     loadMcq(true);
   }, [paramsId]);
 
@@ -110,10 +115,34 @@ export default function Mcq() {
     <div className="space-y-6">
       {questions?.map((q, index) => {
         const options = [
-          { key: "A", text: q.eng3_que_option_a },
-          { key: "B", text: q.eng4_que_option_b },
-          { key: "C", text: q.eng5_que_option_c },
-          { key: "D", text: q.eng6_que_option_d },
+          {
+            key: "A",
+            text:
+              language === "English"
+                ? q.eng3_que_option_a
+                : q.guj3_que_option_a,
+          },
+          {
+            key: "B",
+            text:
+              language === "English"
+                ? q.eng4_que_option_b
+                : q.guj4_que_option_b,
+          },
+          {
+            key: "C",
+            text:
+              language === "English"
+                ? q.eng5_que_option_c
+                : q.guj5_que_option_c,
+          },
+          {
+            key: "D",
+            text:
+              language === "English"
+                ? q.eng6_que_option_d
+                : q.guj6_que_option_d,
+          },
         ];
 
         return (
@@ -122,7 +151,8 @@ export default function Mcq() {
             className="rounded-lg border bg-white p-4 shadow-sm"
           >
             <h3 className="mb-3 font-semibold">
-              {index + 1}. {q.eng1_que_title}
+              {index + 1}.{" "}
+              {language === "English" ? q.eng1_que_title : q.guj1_que_title}
             </h3>
 
             <div className="space-y-2">

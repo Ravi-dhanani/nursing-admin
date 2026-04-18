@@ -16,6 +16,7 @@ export async function GET(req: Request) {
     const query = new Parse.Query(Subject);
 
     query.equalTo("a1_course_id", courseId);
+    query.ascending("a2_subject_number");
 
     const results = await query.find();
 

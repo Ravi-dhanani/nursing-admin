@@ -2,7 +2,7 @@
 
 import { useLanguage } from "@/common/LanguageContext";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type SubjectItem = {
   eng1_subject_name: string;
@@ -16,14 +16,12 @@ interface SubjectListProps {
   id: string;
   slug: string;
   subject: string | null;
-  subid: string | undefined;
 }
 
 export default function SubjectList({
   id,
   slug,
   subject: subjectName,
-  subid,
 }: SubjectListProps) {
   const router = useRouter();
   const [subjects, setSubjects] = useState<SubjectItem[]>([]);
@@ -31,14 +29,18 @@ export default function SubjectList({
 
   const { language } = useLanguage();
 
+  const hasFetched = useRef(false);
+
   useEffect(() => {
+    if (!id || hasFetched.current) return;
+
+    hasFetched.current = true;
+
     const loadSubjects = async () => {
       try {
         setLoading(true);
-
         const res = await fetch(`/api/subjects?courseId=${id}`);
         const data = await res.json();
-
         setSubjects(data?.data || []);
       } catch (error) {
         console.error("Error fetching courses:", error);
@@ -48,7 +50,7 @@ export default function SubjectList({
       }
     };
 
-    if (id) loadSubjects();
+    loadSubjects();
   }, [id]);
 
   return (
@@ -69,7 +71,7 @@ export default function SubjectList({
                   key={i}
                   onClick={() => {
                     router.push(
-                      `/courses/subject/${id}/${slug}/${subid}/notes/${subject.objectId}?name=${encodeURIComponent(subjectName ?? "")}`,
+                      `/courses/subject/${id}/${slug}/notes/${subject.objectId}?name=${encodeURIComponent(subjectName ?? "")}`,
                     );
 
                     localStorage.setItem(
@@ -77,7 +79,7 @@ export default function SubjectList({
                       subject.eng2_video_title || "",
                     );
                   }}
-                  className="flex h-24 cursor-pointer items-center justify-center rounded-md border p-2 text-center transition hover:bg-primary hover:text-white"
+                  className="flex h-24 cursor-pointer items-center justify-center rounded-md border p-2 text-center transition hover:bg-primary hover:font-bold hover:text-white"
                 >
                   {language === "English"
                     ? subject.eng1_subject_name

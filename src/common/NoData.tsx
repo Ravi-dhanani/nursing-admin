@@ -1,49 +1,16 @@
+import Image from "next/image";
+
 export default function NoData({ title }: { title?: string }) {
   return (
     <div className="flex flex-col items-center justify-center bg-white py-20 text-center">
-      <svg
-        width="180"
-        height="180"
-        viewBox="0 0 200 200"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        className="mb-6"
-      >
-        {/* Circle */}
-        <circle cx="100" cy="100" r="90" stroke="#E5E7EB" strokeWidth="4" />
-
-        {/* Folder */}
-        <path
-          d="M60 80 H140 V130 H60 Z"
-          stroke="#9CA3AF"
-          strokeWidth="3"
-          fill="#F9FAFB"
+      <div className="mb-5">
+        <Image
+          src={"/images/empty.svg"}
+          height={200}
+          width={200}
+          alt="no-data"
         />
-        <path
-          d="M60 80 L80 60 H120 L140 80"
-          stroke="#9CA3AF"
-          strokeWidth="3"
-          fill="none"
-        />
-
-        {/* X mark */}
-        <line
-          x1="80"
-          y1="95"
-          x2="120"
-          y2="115"
-          stroke="#EF4444"
-          strokeWidth="3"
-        />
-        <line
-          x1="120"
-          y1="95"
-          x2="80"
-          y2="115"
-          stroke="#EF4444"
-          strokeWidth="3"
-        />
-      </svg>
+      </div>
 
       <h2 className="text-xl font-semibold text-gray-700">
         {title ? title : "No Data Found"}

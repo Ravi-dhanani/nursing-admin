@@ -1,5 +1,6 @@
 import { formatText } from "@/lib/utils";
-import PostContent from "./components/PostContent";
+import BackButton from "./components/BackButton";
+import ClientWrapper from "./components/ClientWrapper";
 import SubjectList from "./components/SubjectList";
 
 // 1. Wrap params and searchParams in Promises
@@ -8,7 +9,6 @@ type Props = {
   params: Promise<{
     id: string;
     slug: string;
-    subid: string;
   }>;
   searchParams: Promise<{
     name?: string;
@@ -17,7 +17,7 @@ type Props = {
 
 export default async function SubjectPage({ params, searchParams }: Props) {
   // 3. Await the promises
-  const { id, slug, subid } = await params;
+  const { id, slug } = await params;
   const resolvedSearchParams = await searchParams;
 
   const name = resolvedSearchParams?.name
@@ -25,19 +25,21 @@ export default async function SubjectPage({ params, searchParams }: Props) {
     : "";
 
   return (
-    <div className="flex h-full bg-white p-4">
-      {/* LEFT SIDE */}
-      <div className="w-2/5 pr-6">
-        <div className="mb-6 inline-block rounded-md border p-3 text-primary">
-          {formatText(slug)}
+    <div className="flex flex-col gap-4">
+      <BackButton />
+      <div className="flex h-full bg-white p-4">
+        {/* LEFT SIDE */}
+        <div className="w-2/5 pr-6">
+          <div className="mb-6 inline-block rounded-md border p-3 text-primary">
+            {formatText(slug)}
+          </div>
+
+          <ClientWrapper />
         </div>
 
-        <h1 className="mb-4 text-2xl font-bold text-primary">{name}</h1>
-        <PostContent subId={subid} />
+        {/* RIGHT SIDE */}
+        <SubjectList id={id} slug={slug} subject={name} />
       </div>
-
-      {/* RIGHT SIDE */}
-      <SubjectList id={id} slug={slug} subject={name} subid={subid} />
     </div>
   );
 }

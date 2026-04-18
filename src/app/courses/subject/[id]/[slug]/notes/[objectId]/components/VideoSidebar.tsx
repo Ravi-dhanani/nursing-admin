@@ -1,4 +1,5 @@
 import { Video } from "@/app/api/video/route";
+import { useLanguage } from "@/common/LanguageContext";
 
 type Props = {
   videos: Video[];
@@ -13,6 +14,7 @@ export default function VideoSidebar({
   onSelect,
   onBack,
 }: Props) {
+  const { language } = useLanguage();
   return (
     <div className="h-screen w-80 space-y-3 border-l p-3">
       <button
@@ -25,7 +27,13 @@ export default function VideoSidebar({
       {videos.map((video) => (
         <div
           key={video.objectId}
-          onClick={() => onSelect(video?.eng1_video_link)}
+          onClick={() =>
+            onSelect(
+              language === "English"
+                ? video?.eng1_video_link
+                : video.guj1_video_link,
+            )
+          }
           className={`flex cursor-pointer gap-3 rounded-lg p-2 hover:bg-gray-100 ${
             activeVideo === video?.eng1_video_link ? "bg-gray-200" : ""
           }`}

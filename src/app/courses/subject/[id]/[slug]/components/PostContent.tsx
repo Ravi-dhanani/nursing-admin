@@ -16,6 +16,8 @@ export default function PostContent({ subId }: PostContentTypes) {
 
         const data: Post = await res.json();
 
+        console.log(data);
+
         setPost(data);
       } catch (error) {
         console.error(error);

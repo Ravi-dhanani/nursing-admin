@@ -102,16 +102,29 @@ export default function Courses() {
                   router.push(
                     `/courses/subject/${subject.objectId}/${createSlug(
                       subject.o9_course_tag,
-                    )}/${createSlug(
+                    )}?name=${createSlug(
                       language === "English"
                         ? subject.eng1_course_name
                         : subject.guj1_course_name,
-                    )}?name=${
-                      language === "English"
-                        ? subject.eng1_course_name
-                        : subject.guj1_course_name
-                    }`,
+                    )}`,
                   );
+
+                  if (subject) {
+                    localStorage.setItem(
+                      "subjectName",
+                      JSON.stringify({
+                        english: subject.eng1_course_name,
+                        gujrati: subject.guj1_course_name,
+                      }),
+                    );
+                    localStorage.setItem(
+                      "subjectId",
+                      JSON.stringify({
+                        english: subject.eng2_course_desc,
+                        gujrati: subject.guj2_course_desc,
+                      }),
+                    );
+                  }
                 }}
                 className="group cursor-pointer rounded-md border border-l-4 border-transparent bg-white px-6 py-4 shadow-sm transition-all duration-300 ease-out hover:-translate-y-[2px] hover:scale-[1.02] hover:border-primary hover:text-primary hover:shadow-md"
               >

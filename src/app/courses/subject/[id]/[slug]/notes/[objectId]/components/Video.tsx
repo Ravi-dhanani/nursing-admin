@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuetionsContextHook } from "@/hooks/QuetionsHook";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import VideoCategoryList from "./VideoCategoryList";
 import VideoPlayer from "./VideoPlayer";
@@ -22,11 +22,16 @@ export default function VideoPage() {
   const [loadingVideos, setLoadingVideos] = useState(false);
 
   // ✅ load categories
+  const hasFetchedCategories = useRef(false);
+
   useEffect(() => {
+    if (!paramsId || hasFetchedCategories.current) return;
+
+    hasFetchedCategories.current = true;
+
     const load = async () => {
       try {
         setLoadingCategories(true);
-
         const data = await fetchVideoCategories(paramsId);
         setCategories(data);
       } catch (err) {
@@ -36,16 +41,19 @@ export default function VideoPage() {
       }
     };
 
-    if (paramsId) load();
+    load();
   }, [paramsId]);
 
-  useEffect(() => {
-    const load = async () => {
-      if (!selectedCategory) return;
+  const hasFetchedVideos = useRef(false);
 
+  useEffect(() => {
+    if (!selectedCategory || hasFetchedVideos.current) return;
+
+    hasFetchedVideos.current = true;
+
+    const load = async () => {
       try {
         setLoadingVideos(true);
-
         const data = await fetchVideos(selectedCategory);
         setVideos(data);
 

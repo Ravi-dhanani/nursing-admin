@@ -52,7 +52,7 @@ export async function GET(req: Request) {
   const query = new Parse.Query(Mcq);
 
   query.equalTo("a1_subject_id", id);
-  query.ascending("a2_que_number"); // ✅ FIX
+  query.ascending("a2_que_number");
 
   query.limit(limit);
   query.skip((page - 1) * limit);

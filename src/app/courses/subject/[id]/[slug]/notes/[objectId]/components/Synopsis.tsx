@@ -1,9 +1,10 @@
 import { Post } from "@/app/api/post/route";
 import { SynopsisItem } from "@/app/api/synopsis/route";
+import { useLanguage } from "@/common/LanguageContext";
 import Loading from "@/common/Loading";
 import NoData from "@/common/NoData";
 import { useQuetionsContextHook } from "@/hooks/QuetionsHook";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function Synopsis() {
   const { paramsId } = useQuetionsContextHook();
@@ -12,13 +13,20 @@ export default function Synopsis() {
   const [post, setPost] = useState<Post | null>(null);
   const [loadingSynopsis, setLoadingSynopsis] = useState(true);
 
+  const { language } = useLanguage();
+
+  const hasFetchedSynopsis = useRef(false);
+
   useEffect(() => {
+    if (!paramsId || hasFetchedSynopsis.current) return;
+
+    hasFetchedSynopsis.current = true;
+
     const load = async () => {
       try {
         setLoadingSynopsis(true);
-
         const res = await fetch(`/api/synopsis?synopsisId=${paramsId}`);
-        const data: SynopsisItem[] = await res.json();
+        const data = await res.json();
 
         setSynopsisList(data);
 
@@ -32,7 +40,7 @@ export default function Synopsis() {
       }
     };
 
-    if (paramsId) load();
+    load();
   }, [paramsId]);
 
   useEffect(() => {
@@ -69,14 +77,22 @@ export default function Synopsis() {
             {synopsisList?.map((item) => (
               <div
                 key={item.objectId}
-                onClick={() => setActiveItem(item.eng1_synp_link)}
+                onClick={() =>
+                  setActiveItem(
+                    language === "English"
+                      ? item.eng1_synp_link
+                      : item.guj1_synp_link,
+                  )
+                }
                 className={`cursor-pointer border-b p-3 text-sm transition ${
                   activeItem === item.eng1_synp_link
                     ? "bg-primary text-white"
                     : "hover:bg-gray-200"
                 }`}
               >
-                {item.eng1_synp_title}
+                {language === "English"
+                  ? item.eng1_synp_title
+                  : item.guj1_synp_title}
               </div>
             ))}
           </div>

@@ -25,6 +25,7 @@ export type CourseType = {
   t2_offer_price: number;
 
   eng2_course_desc: string;
+  guj2_course_desc: string;
 
   a2_is_item_active: boolean;
 
@@ -39,6 +40,7 @@ export async function GET() {
   query.equalTo("o6_which_type", "COURSE");
 
   query.equalTo("a2_is_item_active", true);
+  query.ascending("a1_course_number");
 
   const results = await query.find();
 
@@ -67,6 +69,7 @@ export async function GET() {
     t2_offer_price: item.get("t2_offer_price") as number,
 
     eng2_course_desc: item.get("eng2_course_desc") as string,
+    guj2_course_desc: item.get("guj2_course_desc") as string,
 
     a2_is_item_active: item.get("a2_is_item_active") as boolean,
 

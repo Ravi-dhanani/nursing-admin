@@ -22,13 +22,9 @@ export default async function Page({ params, searchParams }: PageProps) {
 
   if (!objectId) return null;
 
-  const name = resolvedSearchParams?.name
-    ? decodeURIComponent(resolvedSearchParams.name)
-    : "";
-
   return (
     <QuetionsHook paramsId={objectId}>
-      <SubjectQuestionList courseName={slug} subjectName={name} />
+      <SubjectQuestionList courseName={slug} />
     </QuetionsHook>
   );
 }
