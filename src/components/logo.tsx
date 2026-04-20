@@ -4,7 +4,7 @@ export function Logo() {
   return (
     <div className="relative h-28 w-28">
       <Image
-        src={"/images/logo.png"}
+        src={"/assets/images/logo.png"}
         fill
         alt="NextAdmin logo"
         role="presentation"
