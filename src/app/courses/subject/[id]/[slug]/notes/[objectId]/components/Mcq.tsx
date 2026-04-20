@@ -40,7 +40,6 @@ export default function Mcq() {
         );
         setHasMore(result.hasMore);
       } catch (error) {
-        console.error("Error fetching MCQ:", error);
       } finally {
         setLoading(false);
       }
@@ -77,7 +76,7 @@ export default function Mcq() {
           setPage((prev) => prev + 1);
         }
       },
-      { threshold: 0.1 }, // Trigger as soon as the loader enters view
+      { threshold: 0.1 },
     );
 
     const current = loaderRef.current;

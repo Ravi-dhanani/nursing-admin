@@ -1,70 +1,175 @@
-import Signin from "@/components/Auth/Signin";
-import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import type { Metadata } from "next";
+"use client";
+import FingerprintJS from "@fingerprintjs/fingerprintjs";
+import { yupResolver } from "@hookform/resolvers/yup";
 import Image from "next/image";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
+import * as yup from "yup";
+import nursingImg from "./nursing.png";
 
-export const metadata: Metadata = {
-  title: "Sign in",
+const schema = yup.object({
+  mobile: yup
+    .string()
+    .required("Mobile number is required")
+    .matches(/^[0-9]+$/, "Only Mobile Number are allowed")
+    .length(10, "Mobile number must be exactly 10 digits")
+    .matches(/^[6-9]/, "Mobile number must start with 6-9"),
+});
+
+type FormData = {
+  mobile: string;
 };
 
-export default function SignIn() {
+export default function SignInPage() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+  } = useForm<FormData>({
+    resolver: yupResolver(schema),
+  });
+
+  const router = useRouter();
+  const mobileValue = watch("mobile");
+
+  const onSubmit = async (data: FormData) => {
+    try {
+      const res = await fetch("/api/auth/sign-in", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ mobile: data.mobile }),
+      });
+
+      const result = await res.json();
+
+      if (!result.success) {
+        toast.error(result.message);
+        return;
+      }
+
+      let visitorId = result?.data?.a10_web_id;
+
+      const fp = await FingerprintJS.load();
+      const fpResult = await fp.get();
+      const currentVisitorId = fpResult.visitorId;
+
+      if (visitorId && visitorId !== currentVisitorId) {
+        toast.error("You are already logged in on another device");
+        return;
+      }
+
+      if (!visitorId) {
+        visitorId = currentVisitorId;
+
+        await fetch("/api/auth/update-visitor", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            objectId: result.data.objectId,
+            visitorId,
+          }),
+        });
+      }
+
+      const sendOtp = await fetch("/api/auth/send-otp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ mobile: data.mobile }),
+      });
+
+      const otpResult = await sendOtp.json();
+
+      if (otpResult.success === true) {
+        toast.error(otpResult.message || "Failed to send OTP");
+        return;
+      }
+
+      if (otpResult?.data.UserId) {
+        localStorage.setItem("userId", JSON.stringify(otpResult.data.UserId));
+        localStorage.setItem("mobileNo", JSON.stringify(data.mobile));
+      }
+
+      const userData = {
+        ...result.data,
+        a10_web_id: visitorId,
+      };
+
+      localStorage.setItem("user", JSON.stringify(userData));
+
+      document.cookie = `visitorId=${visitorId}; path=/; max-age=86400; SameSite=Lax`;
+
+      toast.success("OTP sent successfully");
+
+      router.push("/auth/verify");
+    } catch (error) {
+      toast.error("Something went wrong");
+    }
+  };
+
   return (
-    <>
-      <Breadcrumb pageName="Sign In" />
-
-      <div className="rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
-        <div className="flex flex-wrap items-center">
-          <div className="w-full xl:w-1/2">
-            <div className="w-full p-4 sm:p-12.5 xl:p-15">
-              <Signin />
-            </div>
-          </div>
-
-          <div className="hidden w-full p-7.5 xl:block xl:w-1/2">
-            <div className="custom-gradient-1 overflow-hidden rounded-2xl px-12.5 pt-12.5 dark:!bg-dark-2 dark:bg-none">
-              <Link className="mb-10 inline-block" href="/">
-                <Image
-                  className="hidden dark:block"
-                  src={"/images/logo/logo.svg"}
-                  alt="Logo"
-                  width={176}
-                  height={32}
-                />
-                <Image
-                  className="dark:hidden"
-                  src={"/images/logo/logo-dark.svg"}
-                  alt="Logo"
-                  width={176}
-                  height={32}
-                />
-              </Link>
-              <p className="mb-3 text-xl font-medium text-dark dark:text-white">
-                Sign in to your account
-              </p>
-
-              <h1 className="mb-4 text-2xl font-bold text-dark dark:text-white sm:text-heading-3">
-                Welcome Back!
-              </h1>
-
-              <p className="w-full max-w-[375px] font-medium text-dark-4 dark:text-dark-6">
-                Please sign in to your account by completing the necessary
-                fields below
-              </p>
-
-              <div className="mt-31">
-                <Image
-                  src={"/images/grids/grid-02.svg"}
-                  alt="Logo"
-                  width={405}
-                  height={325}
-                  className="mx-auto dark:opacity-30"
-                />
-              </div>
-            </div>
-          </div>
+    <div className="flex min-h-screen w-96 items-center justify-center bg-gray-100 px-4">
+      <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-lg">
+        {/* Logo */}
+        <div className="mb-6 flex justify-center">
+          <Image
+            src={nursingImg}
+            alt="logo"
+            className="h-28 w-28 object-contain"
+          />
         </div>
+
+        {/* Title */}
+        <h2 className="mb-6 text-center text-xl font-semibold text-gray-800 dark:text-white">
+          Login with Mobile Number
+        </h2>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {/* Mobile Input */}
+          <div>
+            <input
+              type="tel"
+              placeholder="Enter mobile number"
+              {...register("mobile")}
+              onInput={(e: any) => {
+                e.target.value = e.target.value.replace(/\D/g, "");
+              }}
+              className={`w-full rounded-lg border px-4 py-3 outline-none transition ${
+                !mobileValue
+                  ? "border-gray-300" // empty
+                  : errors.mobile
+                    ? "border-red-500" // error
+                    : mobileValue.length === 10
+                      ? "border-primary" // valid
+                      : "border-gray-300"
+              } `}
+            />
+
+            {/* Error */}
+            {errors.mobile && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.mobile.message}
+              </p>
+            )}
+          </div>
+
+          {/* Button */}
+          <button
+            type="submit"
+            className="w-full rounded-lg bg-primary py-3 text-white"
+          >
+            Continue
+          </button>
+        </form>
       </div>
-    </>
+    </div>
   );
 }

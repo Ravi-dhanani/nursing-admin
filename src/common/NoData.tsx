@@ -5,7 +5,7 @@ export default function NoData({ title }: { title?: string }) {
     <div className="flex flex-col items-center justify-center bg-white py-20 text-center">
       <div className="mb-5">
         <Image
-          src={"/images/empty.svg"}
+          src={"/assets/images/empty.svg"}
           height={200}
           width={200}
           alt="no-data"

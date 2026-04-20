@@ -86,6 +86,7 @@ export async function GET(req: Request) {
     createdAt: item.createdAt?.toISOString() ?? "",
     updatedAt: item.updatedAt?.toISOString() ?? "",
   }));
+
   return Response.json({
     data,
     total,

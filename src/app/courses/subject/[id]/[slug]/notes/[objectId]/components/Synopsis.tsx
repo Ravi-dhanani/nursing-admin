@@ -34,7 +34,6 @@ export default function Synopsis() {
           setActiveItem(data[0].eng1_synp_link);
         }
       } catch (error) {
-        console.error(error);
       } finally {
         setLoadingSynopsis(false);
       }
@@ -52,7 +51,6 @@ export default function Synopsis() {
         const data: Post = await res.json();
         setPost(data);
       } catch (error) {
-        console.error(error);
         setPost(null);
       }
     };

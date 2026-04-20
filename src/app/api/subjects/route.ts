@@ -40,8 +40,6 @@ export async function GET(req: Request) {
 
     return Response.json({ success: true, data });
   } catch (error: any) {
-    console.error("API ERROR:", error);
-
     return Response.json(
       { success: false, error: error.message },
       { status: 500 },

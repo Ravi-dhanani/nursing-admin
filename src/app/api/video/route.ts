@@ -56,7 +56,6 @@ export async function GET(req: Request) {
 
     return Response.json(data);
   } catch (error) {
-    console.error("Video API Error:", error);
     return Response.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

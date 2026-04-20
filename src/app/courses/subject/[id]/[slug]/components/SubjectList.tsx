@@ -43,7 +43,6 @@ export default function SubjectList({
         const data = await res.json();
         setSubjects(data?.data || []);
       } catch (error) {
-        console.error("Error fetching courses:", error);
         setSubjects([]);
       } finally {
         setLoading(false);

@@ -3,8 +3,6 @@ import BackButton from "./components/BackButton";
 import ClientWrapper from "./components/ClientWrapper";
 import SubjectList from "./components/SubjectList";
 
-// 1. Wrap params and searchParams in Promises
-// 2. Remove the '?' from subid (since the folder [subid] makes it required)
 type Props = {
   params: Promise<{
     id: string;
@@ -16,7 +14,6 @@ type Props = {
 };
 
 export default async function SubjectPage({ params, searchParams }: Props) {
-  // 3. Await the promises
   const { id, slug } = await params;
   const resolvedSearchParams = await searchParams;
 

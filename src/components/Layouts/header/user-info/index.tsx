@@ -1,6 +1,6 @@
 "use client";
-
-import { ChevronUpIcon } from "@/assets/icons";
+import { UserType } from "@/app/api/auth/sign-in/route";
+import { ChevronUpIcon } from "@/common/icons";
 import {
   Dropdown,
   DropdownContent,
@@ -8,16 +8,62 @@ import {
 } from "@/components/ui/dropdown";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 import { LogOutIcon, SettingsIcon, UserIcon } from "./icons";
 
 export function UserInfo() {
   const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState<UserType | null>(null);
 
-  const USER = {
-    name: "John Smith",
-    email: "johnson@nextadmin.com",
-    img: "/images/user/user-03.png",
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+  // const USER = {
+  //   name: "John Smith",
+  //   email: "johnson@nextadmin.com",
+  //   img: "/images/user/user-03.png",
+  // };
+
+  const router = useRouter();
+
+  const handleLogout = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You will be logged out",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, Logout",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#00858a", // 👉 your primary color (blue)
+      cancelButtonColor: "red",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // ✅ Clear cookie
+        document.cookie = "visitorId=; path=/; max-age=0; SameSite=Lax";
+
+        // ✅ Clear localStorage
+        localStorage.removeItem("user");
+        localStorage.removeItem("visitorId");
+
+        // ✅ Success message
+        Swal.fire({
+          title: "Logged out!",
+          text: "You have been successfully logged out.",
+          icon: "success",
+          confirmButtonColor: "#00858a",
+        }).then(() => {
+          // 👉 redirect after alert
+          router.push("/auth/sign-in");
+        });
+      }
+    });
   };
 
   return (
@@ -53,7 +99,7 @@ export function UserInfo() {
           </div>
 
           <figcaption className="flex items-center gap-1 font-medium text-dark dark:text-dark-6 max-[1024px]:sr-only">
-            <span>{USER.name}</span>
+            <span>{user?.a1_name}</span>
 
             <ChevronUpIcon
               aria-hidden
@@ -94,10 +140,12 @@ export function UserInfo() {
 
           <figcaption className="space-y-1 text-base font-medium">
             <div className="mb-2 leading-none text-dark dark:text-white">
-              {USER.name}
+              {user?.a1_name}
             </div>
 
-            <div className="leading-none text-gray-6">{USER.email}</div>
+            <div className="leading-none text-gray-6">
+              {user?.a2_email_address}
+            </div>
           </figcaption>
         </figure>
 
@@ -132,7 +180,7 @@ export function UserInfo() {
         <div className="p-2 text-base text-[#4B5563] dark:text-dark-6">
           <button
             className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-2 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white"
-            onClick={() => setIsOpen(false)}
+            onClick={handleLogout}
           >
             <LogOutIcon />
 

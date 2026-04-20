@@ -8,6 +8,7 @@ import VideoPlayer from "./VideoPlayer";
 import VideoSidebar from "./VideoSidebar";
 
 import NoData from "@/common/NoData";
+import { toast } from "react-toastify";
 import { fetchVideos } from "../services/video.service";
 import { fetchVideoCategories } from "../services/videoCategory.service";
 
@@ -35,7 +36,7 @@ export default function VideoPage() {
         const data = await fetchVideoCategories(paramsId);
         setCategories(data);
       } catch (err) {
-        console.error(err);
+        toast.error("Something went wrong");
       } finally {
         setLoadingCategories(false);
       }
@@ -61,7 +62,7 @@ export default function VideoPage() {
           setActiveVideo(data[0].eng1_video_link);
         }
       } catch (err) {
-        console.error(err);
+        toast.error("Something went wrong");
       } finally {
         setLoadingVideos(false);
       }
@@ -100,7 +101,6 @@ export default function VideoPage() {
     );
   }
 
-  // ✅ SCREEN 2
   return (
     <div className="flex">
       <div className="flex-1">
