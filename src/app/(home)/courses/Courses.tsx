@@ -123,6 +123,18 @@ export default function Courses() {
                         gujrati: subject.guj2_course_desc,
                       }),
                     );
+                    localStorage.setItem(
+                      "free-mcq-limit",
+                      JSON.stringify(subject.o3_free_mcq),
+                    );
+                    localStorage.setItem(
+                      "free-videos-limit",
+                      JSON.stringify(subject.o5_free_videos),
+                    );
+                    localStorage.setItem(
+                      "free-synopsis-limit",
+                      JSON.stringify(subject.o4_free_synopsis),
+                    );
                   }
                 }}
                 className="group cursor-pointer rounded-md border border-l-4 border-transparent bg-white px-6 py-4 shadow-sm transition-all duration-300 ease-out hover:-translate-y-[2px] hover:scale-[1.02] hover:border-primary hover:text-primary hover:shadow-md"

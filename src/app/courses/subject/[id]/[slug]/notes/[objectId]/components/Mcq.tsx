@@ -11,6 +11,7 @@ export default function Mcq() {
   const [questions, setQuestions] = useState<McqQuestion[]>([]);
   const [showTopBtn, setShowTopBtn] = useState(false);
 
+  const [mcqLimit, setMcqLimit] = useState<number | null>(null);
   const [showDesc, setShowDesc] = useState<Record<string, boolean>>({});
   const { paramsId } = useQuetionsContextHook();
   const [page, setPage] = useState(1);
@@ -108,11 +109,22 @@ export default function Mcq() {
     });
   };
 
+  useEffect(() => {
+    const mcq = localStorage.getItem("free-mcq-limit");
+
+    if (mcq) {
+      const parsed = JSON.parse(mcq);
+      setMcqLimit(parsed);
+    }
+  }, []);
+
   if (!questions.length && !loading) return <NoData title="No MCQ Available" />;
 
   return (
     <div className="space-y-6">
       {questions?.map((q, index) => {
+        const isLocked = mcqLimit !== null && index >= mcqLimit;
+
         const options = [
           {
             key: "A",
@@ -145,69 +157,92 @@ export default function Mcq() {
         ];
 
         return (
-          <div
-            key={`${q.objectId}-${index}`}
-            className="rounded-lg border bg-white p-4 shadow-sm"
-          >
-            <h3 className="mb-3 font-semibold">
-              {index + 1}.{" "}
-              {language === "English" ? q.eng1_que_title : q.guj1_que_title}
-            </h3>
-
-            <div className="space-y-2">
-              {options.map((opt) => (
-                <div
-                  key={opt.key}
-                  className={`rounded-md border p-2 transition-colors ${
-                    showAnswer[q.objectId] && opt.key === q.eng8_correct_answer
-                      ? "border-green-500 bg-green-50"
-                      : "hover:bg-gray-50"
-                  }`}
-                >
-                  <span className="mr-2 font-bold">{opt.key}.</span> {opt.text}
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-4 flex flex-wrap gap-3">
-              <button
-                onClick={() =>
-                  setShowAnswer((p) => ({ ...p, [q.objectId]: !p[q.objectId] }))
-                }
-                className="rounded bg-primary px-4 py-2 text-sm text-white"
-              >
-                {showAnswer[q.objectId] ? "Hide Answer" : "View Answer"}
-              </button>
-
-              {q.eng9_que_other_desc && (
-                <button
-                  onClick={() =>
-                    setShowDesc((p) => ({ ...p, [q.objectId]: !p[q.objectId] }))
-                  }
-                  className="rounded bg-gray-600 px-4 py-2 text-sm text-white hover:bg-gray-700"
-                >
-                  {showDesc[q.objectId]
-                    ? "Hide Description"
-                    : "Show Description"}
-                </button>
-              )}
-            </div>
-
-            {showAnswer[q.objectId] && (
-              <p className="mt-3 rounded border border-green-200 bg-green-50 p-2 font-bold text-green-700">
-                Correct Answer: {q.eng8_correct_answer}
-              </p>
-            )}
-
-            {showDesc[q.objectId] && q.eng9_que_other_desc && (
-              <div className="mt-3 rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-gray-800">
-                <p className="mb-1 font-semibold">Explanation:</p>
-                {q.eng9_que_other_desc}
+          <div key={`${q.objectId}-${index}`} className="relative">
+            {/* 🔒 Overlay */}
+            {isLocked && (
+              <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-white/70 backdrop-blur-sm">
+                <p className="text-center font-semibold text-gray-700">
+                  🔒 Unlock more MCQs
+                </p>
               </div>
             )}
+
+            {/* Content */}
+            <div
+              className={`rounded-lg border bg-white p-4 shadow-sm ${
+                isLocked ? "pointer-events-none blur-sm" : ""
+              }`}
+            >
+              <h3 className="mb-3 font-semibold">
+                {index + 1}.{" "}
+                {language === "English" ? q.eng1_que_title : q.guj1_que_title}
+              </h3>
+
+              <div className="space-y-2">
+                {options.map((opt) => (
+                  <div
+                    key={opt.key}
+                    className={`rounded-md border p-2 transition-colors ${
+                      showAnswer[q.objectId] &&
+                      opt.key === q.eng8_correct_answer
+                        ? "border-green-500 bg-green-50"
+                        : "hover:bg-gray-50"
+                    }`}
+                  >
+                    <span className="mr-2 font-bold">{opt.key}.</span>{" "}
+                    {opt.text}
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-4 flex flex-wrap gap-3">
+                <button
+                  onClick={() =>
+                    setShowAnswer((p) => ({
+                      ...p,
+                      [q.objectId]: !p[q.objectId],
+                    }))
+                  }
+                  className="rounded bg-primary px-4 py-2 text-sm text-white"
+                >
+                  {showAnswer[q.objectId] ? "Hide Answer" : "View Answer"}
+                </button>
+
+                {q.eng9_que_other_desc && (
+                  <button
+                    onClick={() =>
+                      setShowDesc((p) => ({
+                        ...p,
+                        [q.objectId]: !p[q.objectId],
+                      }))
+                    }
+                    className="rounded bg-gray-600 px-4 py-2 text-sm text-white hover:bg-gray-700"
+                  >
+                    {showDesc[q.objectId]
+                      ? "Hide Description"
+                      : "Show Description"}
+                  </button>
+                )}
+              </div>
+
+              {showAnswer[q.objectId] && (
+                <p className="mt-3 rounded border border-green-200 bg-green-50 p-2 font-bold text-green-700">
+                  Correct Answer: {q.eng8_correct_answer}
+                </p>
+              )}
+
+              {showDesc[q.objectId] && q.eng9_que_other_desc && (
+                <div className="mt-3 rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-gray-800">
+                  <p className="mb-1 font-semibold">Explanation:</p>
+                  {q.eng9_que_other_desc}
+                </div>
+              )}
+            </div>
           </div>
         );
       })}
+
+      {/* 🔝 Scroll to top */}
       {showTopBtn && (
         <button
           onClick={scrollToTop}
@@ -216,6 +251,8 @@ export default function Mcq() {
           ↑ Top
         </button>
       )}
+
+      {/* 🔄 Loader */}
       <div
         ref={loaderRef}
         className="flex items-center justify-center bg-white py-10 font-bold italic text-primary"

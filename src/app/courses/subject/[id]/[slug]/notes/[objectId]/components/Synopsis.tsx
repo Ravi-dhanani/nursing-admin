@@ -12,10 +12,20 @@ export default function Synopsis() {
   const [activeItem, setActiveItem] = useState<string | null>(null);
   const [post, setPost] = useState<Post | null>(null);
   const [loadingSynopsis, setLoadingSynopsis] = useState(true);
+  const [synopsisLimit, setSynopsisLimit] = useState<number | null>(null);
 
   const { language } = useLanguage();
 
   const hasFetchedSynopsis = useRef(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const limit = localStorage.getItem("free-synopsis-limit");
+      if (limit) {
+        setSynopsisLimit(Number(limit));
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (!paramsId || hasFetchedSynopsis.current) return;
@@ -72,27 +82,42 @@ export default function Synopsis() {
               Units
             </div>
 
-            {synopsisList?.map((item) => (
-              <div
-                key={item.objectId}
-                onClick={() =>
-                  setActiveItem(
-                    language === "English"
-                      ? item.eng1_synp_link
-                      : item.guj1_synp_link,
-                  )
-                }
-                className={`cursor-pointer border-b p-3 text-sm transition ${
-                  activeItem === item.eng1_synp_link
-                    ? "bg-primary text-white"
-                    : "hover:bg-gray-200"
-                }`}
-              >
-                {language === "English"
-                  ? item.eng1_synp_title
-                  : item.guj1_synp_title}
-              </div>
-            ))}
+            {synopsisList.map((item, index) => {
+              const isLocked = synopsisLimit !== null && index >= synopsisLimit;
+
+              const link =
+                language === "English"
+                  ? item.eng1_synp_link
+                  : item.guj1_synp_link;
+
+              return (
+                <div key={item.objectId} className="relative">
+                  {/* 🔒 Overlay */}
+                  {isLocked && (
+                    <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/70 text-xs font-semibold text-gray-700 backdrop-blur-sm">
+                      🔒 Locked
+                    </div>
+                  )}
+
+                  <div
+                    onClick={() => {
+                      if (!isLocked) {
+                        setActiveItem(link);
+                      }
+                    }}
+                    className={`cursor-pointer border-b p-3 text-sm transition ${
+                      activeItem === item.eng1_synp_link
+                        ? "bg-primary text-white"
+                        : "hover:bg-gray-200"
+                    } ${isLocked ? "pointer-events-none blur-sm" : ""}`}
+                  >
+                    {language === "English"
+                      ? item.eng1_synp_title
+                      : item.guj1_synp_title}
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
           <div className="w-2/3 overflow-y-auto bg-white p-5">
