@@ -11,11 +11,27 @@ export const NAV_DATA = [
         icon: Icons.HomeIcon,
         items: [],
       },
+
       {
-        title: "Materials",
-        url: "/materials",
-        icon: Icons.MaterialIcon,
-        items: [],
+        title: "Content",
+        icon: Icons.ContentIcon,
+        items: [
+          {
+            title: "Materials",
+            url: "/content/materials",
+            icon: Icons.MaterialIcon,
+          },
+          {
+            title: "Stores",
+            url: "/content/stores",
+            icon: Icons.StoreIcon,
+          },
+          {
+            title: "Info",
+            url: "/content/info",
+            icon: Icons.InfoIcon,
+          },
+        ],
       },
       {
         title: "Settings",

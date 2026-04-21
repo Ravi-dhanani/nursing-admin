@@ -27,7 +27,6 @@ export default function Courses() {
 
         setCourses(data);
       } catch (error) {
-        console.error("Error fetching courses:", error);
       } finally {
         setLoading(false);
       }
