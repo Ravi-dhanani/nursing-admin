@@ -19,6 +19,7 @@ export type UserType = {
   createdAt: string;
   updatedAt: string;
 };
+
 export async function POST(req: Request) {
   try {
     const { mobile } = await req.json();
@@ -35,21 +36,33 @@ export async function POST(req: Request) {
 
     query.equalTo("a3_phone_number", mobile);
 
-    const user = await query.first();
+    const existingUser = await query.first();
 
-    if (!user) {
-      return Response.json(
-        { success: false, message: "User not found" },
-        { status: 404 },
-      );
+    if (!existingUser) {
+      const newUser = new User();
+
+      newUser.set("a3_phone_number", mobile);
+      newUser.set("a10_web_id", null);
+
+      const savedUser = await newUser.save();
+
+      return Response.json({
+        success: true,
+        isNewUser: true,
+        message: "User created successfully",
+        data: savedUser.toJSON(),
+      });
     }
 
     return Response.json({
       success: true,
+      isNewUser: false,
       message: "Login successful",
-      data: user,
+      data: existingUser.toJSON(),
     });
   } catch (error) {
+    console.error(error);
+
     return Response.json(
       { success: false, message: "Something went wrong" },
       { status: 500 },

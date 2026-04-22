@@ -45,14 +45,12 @@ export function UserInfo() {
       cancelButtonColor: "red",
     }).then((result) => {
       if (result.isConfirmed) {
-        // ✅ Clear cookie
         document.cookie = "visitorId=; path=/; max-age=0; SameSite=Lax";
+        document.cookie = "isVerified=false; path=/; max-age=0; SameSite=Lax";
 
-        // ✅ Clear localStorage
         localStorage.removeItem("user");
         localStorage.removeItem("visitorId");
 
-        // ✅ Success message
         Swal.fire({
           title: "Logged out!",
           text: "You have been successfully logged out.",

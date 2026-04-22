@@ -71,7 +71,7 @@ export default function VerifyPage() {
 
   const onSubmit = async (data: FormData) => {
     try {
-      const userId = JSON.parse(localStorage.getItem("userId") || "");
+      const userId = localStorage.getItem("userId");
 
       if (!userId) {
         toast.error("User not found");
@@ -94,10 +94,12 @@ export default function VerifyPage() {
       toast.success(result.message || "OTP verified successfully");
 
       inputsRef.current[0]?.focus();
-      document.cookie = `isVerified=true; path=/; max-age=86400`;
 
-      router.push("/");
+      document.cookie = `isVerified=true; path=/; max-age=86400; SameSite=Lax; Secure`;
+
+      router.push("/courses");
     } catch (error) {
+      console.log(error);
       toast.error("Something went wrong");
     }
   };

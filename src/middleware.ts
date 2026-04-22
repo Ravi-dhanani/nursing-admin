@@ -8,22 +8,29 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const isAuthRoute = pathname.startsWith("/auth");
+  const isSignInRoute = pathname.startsWith("/auth/sign-in");
   const isVerifyRoute = pathname.startsWith("/auth/verify");
 
-  if (
-    !visitorId &&
-    !pathname.startsWith("/auth/sign-in") &&
-    !pathname.startsWith("/auth/verify")
-  ) {
-    return NextResponse.redirect(new URL("/auth/sign-in", request.url));
+  // ✅ CASE 1: No visitorId → go to login
+  if (!visitorId) {
+    if (!isSignInRoute && !isVerifyRoute) {
+      return NextResponse.redirect(new URL("/auth/sign-in", request.url));
+    }
+    return NextResponse.next();
   }
 
-  if (visitorId && !isVerified && !isVerifyRoute) {
-    return NextResponse.redirect(new URL("/auth/verify", request.url));
+  if (visitorId && !isVerified) {
+    if (!isVerifyRoute) {
+      return NextResponse.redirect(new URL("/auth/verify", request.url));
+    }
+    return NextResponse.next();
   }
 
-  if (visitorId && isVerified && isAuthRoute) {
-    return NextResponse.redirect(new URL("/", request.url));
+  // ✅ CASE 3: verified user → block auth pages
+  if (visitorId && isVerified) {
+    if (isAuthRoute) {
+      return NextResponse.redirect(new URL("/courses", request.url));
+    }
   }
 
   return NextResponse.next();

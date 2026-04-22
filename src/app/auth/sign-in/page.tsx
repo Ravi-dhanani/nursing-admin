@@ -51,20 +51,21 @@ export default function SignInPage() {
         return;
       }
 
-      let visitorId = result?.data?.a10_web_id;
+      const dbVisitorId = result?.data?.a10_web_id;
+      const isNewUser = !dbVisitorId;
 
       const fp = await FingerprintJS.load();
       const fpResult = await fp.get();
       const currentVisitorId = fpResult.visitorId;
 
-      if (visitorId && visitorId !== currentVisitorId) {
+      if (dbVisitorId && dbVisitorId !== currentVisitorId) {
         toast.error("You are already logged in on another device");
         return;
       }
 
-      if (!visitorId) {
-        visitorId = currentVisitorId;
+      document.cookie = `visitorId=${currentVisitorId}; path=/; max-age=86400; SameSite=Lax; Secure`;
 
+      if (isNewUser) {
         await fetch("/api/auth/update-visitor", {
           method: "POST",
           headers: {
@@ -72,43 +73,49 @@ export default function SignInPage() {
           },
           body: JSON.stringify({
             objectId: result.data.objectId,
-            visitorId,
+            visitorId: currentVisitorId,
           }),
         });
-      }
 
-      const sendOtp = await fetch("/api/auth/send-otp", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ mobile: data.mobile }),
-      });
+        const sendOtp = await fetch("/api/auth/send-otp", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ mobile: data.mobile }),
+        });
 
-      const otpResult = await sendOtp.json();
+        const otpResult = await sendOtp.json();
 
-      if (otpResult.success === true) {
-        toast.error(otpResult.message || "Failed to send OTP");
+        console.log(otpResult);
+
+        if (otpResult.success === true) {
+          toast.error(otpResult.message || "Failed to send OTP");
+          return;
+        }
+
+        if (otpResult?.data?.UserId) {
+          localStorage.setItem("userId", JSON.stringify(otpResult.data.UserId));
+          localStorage.setItem("mobileNo", JSON.stringify(data.mobile));
+        }
+
+        localStorage.setItem("user", JSON.stringify(result.data));
+
+        toast.success("OTP sent successfully");
+        router.push("/auth/verify");
         return;
       }
 
-      if (otpResult?.data.UserId) {
-        localStorage.setItem("userId", JSON.stringify(otpResult.data.UserId));
-        localStorage.setItem("mobileNo", JSON.stringify(data.mobile));
+      if (!result?.data?.a10_web_id) {
+        document.cookie = `isVerified=false; path=/; max-age=86400; SameSite=Lax; Secure`;
+      } else {
+        document.cookie = `isVerified=true; path=/; max-age=86400; SameSite=Lax; Secure`;
       }
 
-      const userData = {
-        ...result.data,
-        a10_web_id: visitorId,
-      };
+      localStorage.setItem("user", JSON.stringify(result.data));
 
-      localStorage.setItem("user", JSON.stringify(userData));
-
-      document.cookie = `visitorId=${visitorId}; path=/; max-age=86400; SameSite=Lax`;
-
-      toast.success("OTP sent successfully");
-
-      router.push("/auth/verify");
+      toast.success("Sign In successfully");
+      router.push("/courses");
     } catch (error) {
       toast.error("Something went wrong");
     }
