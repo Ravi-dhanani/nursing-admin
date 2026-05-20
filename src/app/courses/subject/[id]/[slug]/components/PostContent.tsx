@@ -24,10 +24,18 @@ export default function PostContent({ subId }: PostContentTypes) {
 
     if (subId) load();
   }, [subId]);
+
   return (
     <div>
       {post?.content?.rendered ? (
         <div
+          className="pointer-events-none select-none"
+          style={{
+            WebkitUserSelect: "none",
+            MozUserSelect: "none",
+            msUserSelect: "none",
+            userSelect: "none",
+          }}
           dangerouslySetInnerHTML={{
             __html: post.content.rendered,
           }}

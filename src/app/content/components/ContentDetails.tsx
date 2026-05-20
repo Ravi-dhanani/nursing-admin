@@ -101,6 +101,7 @@ export default function ContentDetails({ id }: { id?: string | string[] }) {
       console.error("Invalid localStorage data");
     }
   }, []);
+
   return (
     <div className="flex flex-col gap-3">
       <BackButton />
@@ -208,7 +209,13 @@ export default function ContentDetails({ id }: { id?: string | string[] }) {
                   </button>
                 </div>
                 <div
-                  className="prose max-w-none"
+                  className="prose pointer-events-none max-w-none select-none"
+                  style={{
+                    WebkitUserSelect: "none",
+                    MozUserSelect: "none",
+                    msUserSelect: "none",
+                    userSelect: "none",
+                  }}
                   dangerouslySetInnerHTML={{ __html: htmlContent }}
                 />
               </>

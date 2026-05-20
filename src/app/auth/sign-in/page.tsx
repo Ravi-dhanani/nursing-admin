@@ -3,6 +3,7 @@ import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import * as yup from "yup";
@@ -22,6 +23,7 @@ type FormData = {
 };
 
 export default function SignInPage() {
+  const [isLoading, setIsLoading] = useState(false);
   const {
     register,
     handleSubmit,
@@ -35,6 +37,10 @@ export default function SignInPage() {
   const mobileValue = watch("mobile");
 
   const onSubmit = async (data: FormData) => {
+    if (isLoading) return;
+
+    setIsLoading(true);
+
     try {
       const res = await fetch("/api/auth/sign-in", {
         method: "POST",
@@ -48,6 +54,7 @@ export default function SignInPage() {
 
       if (!result.success) {
         toast.error(result.message);
+        setIsLoading(false);
         return;
       }
 
@@ -60,6 +67,7 @@ export default function SignInPage() {
 
       if (dbVisitorId && dbVisitorId !== currentVisitorId) {
         toast.error("You are already logged in on another device");
+        setIsLoading(false);
         return;
       }
 
@@ -87,10 +95,9 @@ export default function SignInPage() {
 
         const otpResult = await sendOtp.json();
 
-        console.log(otpResult);
-
         if (otpResult.success === true) {
           toast.error(otpResult.message || "Failed to send OTP");
+          setIsLoading(false);
           return;
         }
 
@@ -118,6 +125,7 @@ export default function SignInPage() {
       router.push("/courses");
     } catch (error) {
       toast.error("Something went wrong");
+      setIsLoading(false);
     }
   };
 
@@ -171,9 +179,12 @@ export default function SignInPage() {
           {/* Button */}
           <button
             type="submit"
-            className="w-full rounded-lg bg-primary py-3 text-white"
+            disabled={isLoading}
+            className={`w-full rounded-lg py-3 text-white transition ${
+              isLoading ? "cursor-not-allowed bg-gray-400" : "bg-primary"
+            }`}
           >
-            Continue
+            {isLoading ? "Loading..." : "Continue"}
           </button>
         </form>
       </div>
