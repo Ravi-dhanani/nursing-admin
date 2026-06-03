@@ -1,5 +1,5 @@
 {
-  "name": "free-nextadmin-nextjs",
+  "name": "MY NURSING APP",
   "version": "1.2.1",
   "private": true,
   "scripts": {
@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@embedpdf/react-pdf-viewer": "^2.14.3",
     "@fingerprintjs/fingerprintjs": "^5.2.0",
     "@headlessui/react": "^2.2.4",
     "@heroicons/react": "^2.2.0",

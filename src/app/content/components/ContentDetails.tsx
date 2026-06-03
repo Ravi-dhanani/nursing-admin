@@ -3,6 +3,7 @@ import { Language } from "@/app/courses/subject/[id]/[slug]/components/ClientWra
 import { useLanguage } from "@/common/LanguageContext";
 import NoData from "@/common/NoData";
 import { useEffect, useState } from "react";
+import MyPdfViewer from "./MyPdfViewer";
 
 type MaterialDetail = {
   objectId: string;
@@ -149,16 +150,13 @@ export default function ContentDetails({ id }: { id?: string | string[] }) {
           </div>
 
           {/* RIGHT SIDE (Scrollable) */}
-          <div className="flex-1 overflow-y-auto p-4">
+          <div className="min-w-0 flex-1 overflow-hidden p-4">
             {loading ? (
               <div className="h-full w-full animate-pulse rounded-lg bg-gray-200" />
             ) : activeItem?.p1_pdf_file?.url ? (
-              <iframe
-                src={`https://docs.google.com/gview?url=${encodeURIComponent(
-                  activeItem.p1_pdf_file.url,
-                )}&embedded=true`}
-                className="h-full w-full rounded-lg border"
-              />
+              <div style={{ height: "700px", width: "100%" }}>
+                <MyPdfViewer pdfUrl={activeItem?.p1_pdf_file.url} />
+              </div>
             ) : contentLoading ? (
               <div className="space-y-3">
                 {[...Array(10)].map((_, i) => (
