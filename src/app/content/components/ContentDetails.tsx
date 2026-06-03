@@ -120,7 +120,7 @@ export default function ContentDetails({ id }: { id?: string | string[] }) {
       ) : (
         <div className="flex h-screen overflow-hidden rounded-md bg-white p-2">
           {/* LEFT SIDE (Sticky) */}
-          <div className="w-1/3 border-r border-gray-300">
+          <div className="w-1/4 border-r border-gray-300">
             <div className="sticky top-0 h-screen overflow-y-auto">
               {loading ? (
                 <div className="space-y-3 p-4">
