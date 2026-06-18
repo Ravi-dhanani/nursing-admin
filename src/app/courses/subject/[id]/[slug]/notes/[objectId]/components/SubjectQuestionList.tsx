@@ -72,10 +72,10 @@ export default function SubjectQuestionList({
         <BackButton />
 
         <div className="mb-6 rounded-lg bg-white p-3">
-          <h1 className="text-2xl font-bold text-black">
+          <h1 className="select-none text-2xl font-bold text-black">
             {formatText(courseName)}
           </h1>
-          <p className="mt-1 text-sm text-black">
+          <p className="mt-1 select-none text-sm text-black">
             {language === "English"
               ? subjectTitle.english
               : subjectTitle.gujrati}

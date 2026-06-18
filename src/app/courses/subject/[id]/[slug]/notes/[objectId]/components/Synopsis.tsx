@@ -105,7 +105,7 @@ export default function Synopsis() {
                         setActiveItem(link);
                       }
                     }}
-                    className={`cursor-pointer border-b p-3 text-sm transition ${
+                    className={`cursor-pointer select-none border-b p-3 text-sm transition ${
                       activeItem === item.eng1_synp_link
                         ? "bg-primary text-white"
                         : "hover:bg-gray-200"
@@ -128,29 +128,99 @@ export default function Synopsis() {
 
                   if (newWindow) {
                     newWindow.document.write(`
-        <html>
-          <head>
-            <title>Content</title>
-            <style>
-              body { font-family: sans-serif; padding: 20px; }
-              * { user-select: none; } /* disable selection */
-            </style>
-          </head>
-          <body oncontextmenu="return false">
-            ${post?.content?.rendered || ""}
-            <script>
-              document.addEventListener('copy', e => e.preventDefault());
-              document.addEventListener('cut', e => e.preventDefault());
-              document.addEventListener('contextmenu', e => e.preventDefault());
-              document.addEventListener('keydown', function(e) {
-                if (e.ctrlKey && ['c','u','s'].includes(e.key.toLowerCase())) {
-                  e.preventDefault();
-                }
-              });
-            </script>
-          </body>
-        </html>
-      `);
+    <html>
+      <head>
+        <title>Content</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <style>
+          body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #fff;
+            user-select: none;
+          }
+
+          #content {
+            transform-origin: top left;
+            transition: transform 0.2s ease;
+          }
+
+          .zoom-controls {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 9999;
+          }
+
+          .zoom-btn {
+            width: 50px;
+            height: 50px;
+            border: none;
+            border-radius: 50%;
+            background: #00858a;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+          }
+
+          .zoom-btn:hover {
+            opacity: 0.9;
+          }
+        </style>
+      </head>
+
+      <body oncontextmenu="return false">
+
+        <div id="content">
+          ${post?.content?.rendered || ""}
+        </div>
+
+        <div class="zoom-controls">
+          <button class="zoom-btn" onclick="zoomIn()">+</button>
+          <button class="zoom-btn" onclick="zoomOut()">−</button>
+        </div>
+
+        <script>
+          let scale = 1;
+
+          function applyZoom() {
+            document.getElementById('content').style.transform =
+              'scale(' + scale + ')';
+          }
+
+          function zoomIn() {
+            scale += 0.1;
+            applyZoom();
+          }
+
+          function zoomOut() {
+            scale = Math.max(0.5, scale - 0.1);
+            applyZoom();
+          }
+
+          document.addEventListener('copy', e => e.preventDefault());
+          document.addEventListener('cut', e => e.preventDefault());
+          document.addEventListener('contextmenu', e => e.preventDefault());
+
+          document.addEventListener('keydown', function(e) {
+            if (
+              (e.ctrlKey && ['c','u','s'].includes(e.key.toLowerCase())) ||
+              e.key === 'F12'
+            ) {
+              e.preventDefault();
+            }
+          });
+        </script>
+
+      </body>
+    </html>
+  `);
+
                     newWindow.document.close();
                   }
                 }}

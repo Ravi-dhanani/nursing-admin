@@ -64,7 +64,7 @@ export default function Courses() {
                 <button
                   key={index}
                   onClick={() => setActiveTag(tag)}
-                  className={`w-full rounded-md border px-4 py-3 text-left transition-all duration-200 ${
+                  className={`w-full select-none rounded-md border px-4 py-3 text-left transition-all duration-200 ${
                     activeTag === tag
                       ? "border-l-4 border-primary bg-white font-semibold text-primary shadow"
                       : "bg-white hover:bg-gray-100"
@@ -79,7 +79,9 @@ export default function Courses() {
       <div className="flex-1 overflow-y-auto p-6">
         <div className="mx-auto max-w-3xl space-y-4 will-change-transform">
           {/* TITLE */}
-          <h2 className="text-lg font-semibold text-gray-700">{activeTag}</h2>
+          <h2 className="select-none text-lg font-semibold text-gray-700">
+            {activeTag}
+          </h2>
 
           {/* SUBJECT LIST */}
           {loading ? (
@@ -139,7 +141,7 @@ export default function Courses() {
                 }}
                 className="group cursor-pointer rounded-md border border-l-4 border-transparent bg-white px-6 py-4 shadow-sm transition-all duration-300 ease-out hover:-translate-y-[2px] hover:scale-[1.02] hover:border-primary hover:text-primary hover:shadow-md"
               >
-                <span className="transition-all duration-300 group-hover:font-medium">
+                <span className="select-none transition-all duration-300 group-hover:font-medium">
                   {language === "English"
                     ? subject.eng1_course_name
                     : subject.guj1_course_name}

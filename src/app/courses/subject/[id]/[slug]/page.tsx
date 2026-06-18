@@ -27,7 +27,7 @@ export default async function SubjectPage({ params, searchParams }: Props) {
       <div className="flex h-full bg-white p-4">
         {/* LEFT SIDE */}
         <div className="w-2/5 pr-6">
-          <div className="mb-6 inline-block rounded-md border p-3 text-primary">
+          <div className="mb-6 inline-block select-none rounded-md border p-3 text-primary">
             {formatText(slug)}
           </div>
 

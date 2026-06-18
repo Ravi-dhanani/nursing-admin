@@ -33,10 +33,10 @@ export function Header() {
       )}
 
       <div className="max-xl:hidden">
-        <h1 className="mb-0.5 text-heading-5 font-bold text-primary dark:text-white">
+        <h1 className="mb-0.5 select-none text-heading-5 font-bold text-primary dark:text-white">
           MY NURSING APP
         </h1>
-        <p className="font-bold text-black">ALL IN 1 NURSING</p>
+        <p className="select-none font-bold text-black">ALL IN 1 NURSING</p>
       </div>
 
       <div className="flex flex-1 items-center justify-end gap-2 min-[375px]:gap-4">

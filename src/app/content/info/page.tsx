@@ -32,7 +32,7 @@ export default function Page() {
   return (
     <div className="p-6">
       {/* Title */}
-      <h1 className="mb-6 text-2xl font-bold text-black">Info</h1>
+      <h1 className="mb-6 select-none text-2xl font-bold text-black">Info</h1>
 
       {/* Grid */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -64,13 +64,13 @@ export default function Page() {
                 }}
                 className="group cursor-pointer rounded-2xl border border-gray-300 p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:bg-primary hover:shadow-lg"
               >
-                <h2 className="mb-2 text-lg font-semibold text-black transition-colors duration-300 group-hover:text-white">
+                <h2 className="mb-2 select-none text-lg font-semibold text-black transition-colors duration-300 group-hover:text-white">
                   {language === "English"
                     ? item.a1_eng_title
                     : item.a2_guj_title}
                 </h2>
 
-                <p className="text-sm text-gray-500 group-hover:text-white">
+                <p className="select-none text-sm text-gray-500 group-hover:text-white">
                   {item.b1_content_type}
                 </p>
 

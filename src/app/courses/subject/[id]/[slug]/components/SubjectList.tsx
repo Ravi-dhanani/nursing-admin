@@ -78,7 +78,7 @@ export default function SubjectList({
                       subject.eng2_video_title || "",
                     );
                   }}
-                  className="flex h-24 cursor-pointer items-center justify-center rounded-md border p-2 text-center transition hover:bg-primary hover:font-bold hover:text-white"
+                  className="flex h-24 cursor-pointer select-none items-center justify-center rounded-md border p-2 text-center transition hover:bg-primary hover:font-bold hover:text-white"
                 >
                   {language === "English"
                     ? subject.eng1_subject_name

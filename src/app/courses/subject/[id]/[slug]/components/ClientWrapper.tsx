@@ -45,7 +45,7 @@ export default function ClientWrapper() {
   }, []);
   return (
     <>
-      <h1 className="mb-4 text-2xl font-bold text-primary">
+      <h1 className="mb-4 select-none text-2xl font-bold text-primary">
         {language === "English" ? subjectTitle.english : subjectTitle.gujrati}
       </h1>
       <PostContent

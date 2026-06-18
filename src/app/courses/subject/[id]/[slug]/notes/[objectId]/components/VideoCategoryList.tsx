@@ -13,7 +13,7 @@ export default function VideoCategoryList({ categories, onSelect }: Props) {
         <div
           key={cat.objectId}
           onClick={() => onSelect(cat.objectId)}
-          className="cursor-pointer rounded-lg border bg-white p-4 hover:bg-primary hover:text-white"
+          className="cursor-pointer select-none rounded-lg border bg-white p-4 hover:bg-primary hover:text-white"
         >
           {cat.eng1_video_title}
         </div>

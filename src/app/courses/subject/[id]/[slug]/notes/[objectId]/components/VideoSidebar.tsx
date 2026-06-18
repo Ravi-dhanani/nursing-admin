@@ -71,7 +71,7 @@ export default function VideoSidebar({
               {video.thumbnail_image ? (
                 <img
                   src={video.thumbnail_image}
-                  className="h-16 w-24 rounded object-cover"
+                  className="h-16 w-24 select-none rounded object-cover"
                 />
               ) : (
                 <div className="flex h-16 w-24 items-center justify-center rounded bg-gray-200 text-xs">
@@ -79,7 +79,7 @@ export default function VideoSidebar({
                 </div>
               )}
 
-              <p className="text-sm font-medium">
+              <p className="select-none text-sm font-medium">
                 {language === "English"
                   ? video.eng1_video_name
                   : video.guj1_video_name}

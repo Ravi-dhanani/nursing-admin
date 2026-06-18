@@ -173,7 +173,7 @@ export default function Mcq() {
                 isLocked ? "pointer-events-none blur-sm" : ""
               }`}
             >
-              <h3 className="mb-3 font-semibold">
+              <h3 className="mb-3 select-none font-semibold">
                 {index + 1}.{" "}
                 {language === "English" ? q.eng1_que_title : q.guj1_que_title}
               </h3>
@@ -182,7 +182,7 @@ export default function Mcq() {
                 {options.map((opt) => (
                   <div
                     key={opt.key}
-                    className={`rounded-md border p-2 transition-colors ${
+                    className={`select-none rounded-md border p-2 transition-colors ${
                       showAnswer[q.objectId] &&
                       opt.key === q.eng8_correct_answer
                         ? "border-green-500 bg-green-50"
@@ -203,7 +203,7 @@ export default function Mcq() {
                       [q.objectId]: !p[q.objectId],
                     }))
                   }
-                  className="rounded bg-primary px-4 py-2 text-sm text-white"
+                  className="select-none rounded bg-primary px-4 py-2 text-sm text-white"
                 >
                   {showAnswer[q.objectId] ? "Hide Answer" : "View Answer"}
                 </button>
@@ -216,7 +216,7 @@ export default function Mcq() {
                         [q.objectId]: !p[q.objectId],
                       }))
                     }
-                    className="rounded bg-gray-600 px-4 py-2 text-sm text-white hover:bg-gray-700"
+                    className="select-none rounded bg-gray-600 px-4 py-2 text-sm text-white hover:bg-gray-700"
                   >
                     {showDesc[q.objectId]
                       ? "Hide Description"
@@ -226,13 +226,13 @@ export default function Mcq() {
               </div>
 
               {showAnswer[q.objectId] && (
-                <p className="mt-3 rounded border border-green-200 bg-green-50 p-2 font-bold text-green-700">
+                <p className="mt-3 select-none rounded border border-green-200 bg-green-50 p-2 font-bold text-green-700">
                   Correct Answer: {q.eng8_correct_answer}
                 </p>
               )}
 
               {showDesc[q.objectId] && q.eng9_que_other_desc && (
-                <div className="mt-3 rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-gray-800">
+                <div className="mt-3 select-none rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-gray-800">
                   <p className="mb-1 font-semibold">Explanation:</p>
                   {q.eng9_que_other_desc}
                 </div>

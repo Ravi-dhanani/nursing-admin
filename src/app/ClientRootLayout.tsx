@@ -7,7 +7,8 @@ import { Sidebar } from "@/components/Layouts/sidebar";
 import "flatpickr/dist/flatpickr.min.css";
 import "jsvectormap/dist/jsvectormap.css";
 
-import DevToolsBlocker from "@/common/DevToolsBlocker";
+import DisableCopy from "@/common/DisableCopy";
+import DisableInspect from "@/common/DisableInspect";
 import { LanguageProvider } from "@/common/LanguageContext";
 import { Header } from "@/components/Layouts/header";
 import { usePathname } from "next/navigation";
@@ -20,17 +21,19 @@ export default function ClientRootLayout({ children }: PropsWithChildren) {
   const pathname = usePathname();
 
   const isAuthPage = pathname.startsWith("/auth");
+  const isBlockedPage = pathname.startsWith("/blocked");
 
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
-        <DevToolsBlocker />
+        <DisableInspect />
+        <DisableCopy />
         <Providers>
           <LanguageProvider>
             <NextTopLoader color="#00858a" showSpinner={false} />
             <ToastContainer />
 
-            {isAuthPage ? (
+            {isAuthPage || isBlockedPage ? (
               <div className="flex min-h-screen items-center justify-center">
                 {children}
               </div>
