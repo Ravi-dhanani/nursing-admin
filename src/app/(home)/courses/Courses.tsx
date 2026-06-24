@@ -10,6 +10,7 @@ export default function Courses() {
   const router = useRouter();
 
   const [activeTag, setActiveTag] = useState<string>("");
+  const [activeSubject, setActiveSubject] = useState<string>("");
 
   const { language } = useLanguage();
 
@@ -44,10 +45,12 @@ export default function Courses() {
   ];
 
   useEffect(() => {
-    if (uniqueTags.length > 0 && !activeTag) {
-      setActiveTag(uniqueTags[0]);
-    }
-  }, [uniqueTags, activeTag]);
+    const savedTag = sessionStorage.getItem("activeTag");
+    const savedSubject = sessionStorage.getItem("activeSubject");
+
+    if (savedTag) setActiveTag(savedTag);
+    if (savedSubject) setActiveSubject(savedSubject);
+  }, []);
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -65,9 +68,13 @@ export default function Courses() {
                   key={index}
                   onClick={() => setActiveTag(tag)}
                   className={`w-full select-none rounded-md border px-4 py-3 text-left transition-all duration-200 ${
-                    activeTag === tag
-                      ? "border-l-4 border-primary bg-white font-semibold text-primary shadow"
-                      : "bg-white hover:bg-gray-100"
+                    activeTag
+                      ? activeTag === tag
+                        ? "border-l-4 border-primary bg-white font-semibold text-primary shadow"
+                        : "bg-white hover:bg-gray-100"
+                      : index === 0
+                        ? "border-l-4 border-primary bg-white font-semibold text-primary shadow"
+                        : "bg-white hover:bg-gray-100"
                   }`}
                 >
                   {tag}
@@ -100,6 +107,8 @@ export default function Courses() {
               <div
                 key={index}
                 onClick={() => {
+                  sessionStorage.setItem("activeTag", activeTag);
+                  sessionStorage.setItem("activeSubject", subject.objectId);
                   router.push(
                     `/courses/subject/${subject.objectId}/${createSlug(
                       subject.o9_course_tag,
@@ -139,7 +148,16 @@ export default function Courses() {
                     );
                   }
                 }}
-                className="group cursor-pointer rounded-md border border-l-4 border-transparent bg-white px-6 py-4 shadow-sm transition-all duration-300 ease-out hover:-translate-y-[2px] hover:scale-[1.02] hover:border-primary hover:text-primary hover:shadow-md"
+                className={`group cursor-pointer rounded-md border border-l-4 px-6 py-4 shadow-sm transition-all duration-300 ease-out ${
+                  activeSubject === subject.objectId
+                    ? "-translate-y-[2px] scale-[1.02] border-primary bg-white font-medium text-primary"
+                    : "border-transparent bg-white hover:-translate-y-[2px] hover:scale-[1.02] hover:border-primary hover:text-primary hover:shadow-md"
+                }`}
+                // className={`group cursor-pointer rounded-md border px-6 py-4 shadow-sm transition-all duration-300 ${
+                //   activeSubject === subject.objectId
+                //     ? "border-primary bg-primary text-white"
+                //     : "border-transparent bg-white hover:border-primary hover:text-primary"
+                // }`}
               >
                 <span className="select-none transition-all duration-300 group-hover:font-medium">
                   {language === "English"

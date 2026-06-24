@@ -2,6 +2,7 @@ import BackButton from "@/app/courses/subject/[id]/[slug]/components/BackButton"
 import { Language } from "@/app/courses/subject/[id]/[slug]/components/ClientWrapper";
 import { useLanguage } from "@/common/LanguageContext";
 import NoData from "@/common/NoData";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import MyPdfViewer from "./MyPdfViewer";
 
@@ -18,6 +19,7 @@ type MaterialDetail = {
 };
 
 export default function ContentDetails({ id }: { id?: string | string[] }) {
+  const router = useRouter();
   const [data, setData] = useState<MaterialDetail[]>([]);
   const [active, setActive] = useState<string | null>(null);
   const [htmlContent, setHtmlContent] = useState<string>("");
@@ -29,11 +31,24 @@ export default function ContentDetails({ id }: { id?: string | string[] }) {
   const [contentLoading, setContentLoading] = useState(false);
   const { language } = useLanguage();
 
+  const isDevToolsOpen = () => {
+    const threshold = 160;
+
+    return (
+      window.outerWidth - window.innerWidth > threshold ||
+      window.outerHeight - window.innerHeight > threshold
+    );
+  };
+
   useEffect(() => {
     if (!id) return;
 
     const fetchData = async () => {
       try {
+        if (isDevToolsOpen()) {
+          router.push("/blocked");
+          return;
+        }
         setLoading(true);
 
         const res = await fetch(
@@ -54,7 +69,7 @@ export default function ContentDetails({ id }: { id?: string | string[] }) {
     };
 
     fetchData();
-  }, [id]);
+  }, [id, router]);
 
   const activeItem = data?.find(
     (item: MaterialDetail) => item.objectId === active,
