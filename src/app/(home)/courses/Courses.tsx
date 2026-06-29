@@ -36,13 +36,15 @@ export default function Courses() {
     loadCourses();
   }, []);
 
-  const filteredCourses = courses?.filter(
-    (item: CourseType) => item?.o9_course_tag === activeTag,
-  );
-
   const uniqueTags = [
     ...new Set(courses.map((item: CourseType) => item.o9_course_tag)),
   ];
+
+  const selectedTag = activeTag || uniqueTags[0] || "";
+
+  const filteredCourses = courses?.filter(
+    (item: CourseType) => item?.o9_course_tag === selectedTag,
+  );
 
   useEffect(() => {
     const savedTag = sessionStorage.getItem("activeTag");
@@ -153,11 +155,6 @@ export default function Courses() {
                     ? "-translate-y-[2px] scale-[1.02] border-primary bg-white font-medium text-primary"
                     : "border-transparent bg-white hover:-translate-y-[2px] hover:scale-[1.02] hover:border-primary hover:text-primary hover:shadow-md"
                 }`}
-                // className={`group cursor-pointer rounded-md border px-6 py-4 shadow-sm transition-all duration-300 ${
-                //   activeSubject === subject.objectId
-                //     ? "border-primary bg-primary text-white"
-                //     : "border-transparent bg-white hover:border-primary hover:text-primary"
-                // }`}
               >
                 <span className="select-none transition-all duration-300 group-hover:font-medium">
                   {language === "English"

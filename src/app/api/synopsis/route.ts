@@ -25,7 +25,16 @@ export async function GET(req: Request) {
     }
 
     const Synopsis = Parse.Object.extend("Synopsis");
-    const query = new Parse.Query(Synopsis);
+    const query1 = new Parse.Query(Synopsis);
+    query1.equalTo("b1_content_type", 1);
+
+    const query2 = new Parse.Query(Synopsis);
+    query2.equalTo("b1_content_type", 3);
+
+    const query3 = new Parse.Query(Synopsis);
+    query3.doesNotExist("b1_content_type");
+
+    const query = Parse.Query.or(query1, query2, query3);
 
     query.equalTo("a1_subject_id", synopsisCategoryId);
 

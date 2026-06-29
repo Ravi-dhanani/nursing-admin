@@ -49,7 +49,17 @@ export async function GET(req: Request) {
   }
 
   const Mcq = Parse.Object.extend("SubjectQuestions");
-  const query = new Parse.Query(Mcq);
+
+  const query1 = new Parse.Query(Mcq);
+  query1.equalTo("q1_content_type", 1);
+
+  const query2 = new Parse.Query(Mcq);
+  query2.equalTo("q1_content_type", 3);
+
+  const query3 = new Parse.Query(Mcq);
+  query3.doesNotExist("q1_content_type");
+
+  const query = Parse.Query.or(query1, query2, query3);
 
   query.equalTo("a1_subject_id", id);
   query.ascending("a2_que_number");

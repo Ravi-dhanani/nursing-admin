@@ -28,6 +28,7 @@ export type CourseType = {
   guj2_course_desc: string;
 
   a2_is_item_active: boolean;
+  q1_content_type: number;
 
   createdAt: string;
   updatedAt: string;
@@ -35,10 +36,20 @@ export type CourseType = {
 
 export async function GET() {
   const Course = Parse.Object.extend("AllCourses");
-  const query = new Parse.Query(Course);
+
+  const query1 = new Parse.Query(Course);
+  query1.equalTo("q1_content_type", 1);
+
+  const query2 = new Parse.Query(Course);
+  query2.equalTo("q1_content_type", 3);
+
+  const query3 = new Parse.Query(Course);
+  query3.doesNotExist("q1_content_type");
+
+  // Combine the three queries
+  const query = Parse.Query.or(query1, query2, query3);
 
   query.equalTo("o6_which_type", "COURSE");
-
   query.equalTo("a2_is_item_active", true);
   query.ascending("a1_course_number");
 
@@ -52,6 +63,7 @@ export async function GET() {
 
     o1_course_iap_id: item.get("o1_course_iap_id") as string,
     a1_course_number: item.get("a1_course_number") as number,
+    q1_content_type: item.get("q1_content_type") as number,
 
     is_active: item.get("is_active") as number,
     o2_course_validity: item.get("o2_course_validity") as number,

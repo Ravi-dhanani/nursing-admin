@@ -16,7 +16,17 @@ export async function GET(req: Request) {
     const contentType = searchParams.get("type");
 
     const Materials = Parse.Object.extend("TitlesTable");
-    const query = new Parse.Query(Materials);
+
+    const query1 = new Parse.Query(Materials);
+    query1.equalTo("d1_content_type", 1);
+
+    const query2 = new Parse.Query(Materials);
+    query2.equalTo("d1_content_type", 3);
+
+    const query3 = new Parse.Query(Materials);
+    query3.doesNotExist("d1_content_type");
+
+    const query = Parse.Query.or(query1, query2, query3);
 
     query.equalTo("b1_content_type", contentType);
 

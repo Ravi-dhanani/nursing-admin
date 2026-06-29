@@ -13,7 +13,17 @@ export async function GET(req: Request) {
     }
 
     const Subject = Parse.Object.extend("CourseSubjects");
-    const query = new Parse.Query(Subject);
+
+    const query1 = new Parse.Query(Subject);
+    query1.equalTo("b1_content_type", 1);
+
+    const query2 = new Parse.Query(Subject);
+    query2.equalTo("b1_content_type", 3);
+
+    const query3 = new Parse.Query(Subject);
+    query3.doesNotExist("b1_content_type");
+
+    const query = Parse.Query.or(query1, query2, query3);
 
     query.equalTo("a1_course_id", courseId);
     query.ascending("a2_subject_number");
