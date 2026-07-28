@@ -170,7 +170,10 @@ export default function ContentDetails({ id }: { id?: string | string[] }) {
               <div className="h-full w-full animate-pulse rounded-lg bg-gray-200" />
             ) : activeItem?.p1_pdf_file?.url ? (
               <div style={{ height: "700px", width: "100%" }}>
-                <MyPdfViewer pdfUrl={activeItem?.p1_pdf_file.url} />
+                <MyPdfViewer
+                  key={activeItem.p1_pdf_file.url}
+                  pdfUrl={activeItem?.p1_pdf_file.url}
+                />
               </div>
             ) : contentLoading ? (
               <div className="space-y-3">

@@ -13,7 +13,7 @@ export type Video = {
 
   a1_video_category_id: string;
 
-  thumbnail_image: string | null;
+  thumbnail_image: string;
 
   createdAt: string;
   updatedAt: string;
@@ -35,24 +35,28 @@ export async function GET(req: Request) {
 
     const results = await query.find();
 
-    const data = results.map((item) => ({
-      objectId: item.id ?? "",
+    const data = results.map((item) => {
+      const thumbnail = item.get("thumbnail_image") as Parse.File | undefined;
 
-      a1_video_number: item.get("a1_video_number") ?? 0,
+      return {
+        objectId: item.id ?? "",
 
-      eng1_video_name: item.get("eng1_video_name") ?? "",
-      guj1_video_name: item.get("guj1_video_name") ?? "",
+        a1_video_number: item.get("a1_video_number") ?? 0,
 
-      eng1_video_link: item.get("eng1_video_link") ?? "",
-      guj1_video_link: item.get("guj1_video_link") ?? "",
+        eng1_video_name: item.get("eng1_video_name") ?? "",
+        guj1_video_name: item.get("guj1_video_name") ?? "",
 
-      a1_video_category_id: item.get("a1_video_category_id") ?? "",
+        eng1_video_link: item.get("eng1_video_link") ?? "",
+        guj1_video_link: item.get("guj1_video_link") ?? "",
 
-      thumbnail_image: item.get("thumbnail_image") ?? null,
+        a1_video_category_id: item.get("a1_video_category_id") ?? "",
 
-      createdAt: item.createdAt?.toISOString() ?? "",
-      updatedAt: item.updatedAt?.toISOString() ?? "",
-    }));
+        thumbnail_image: thumbnail?.url() ?? "",
+
+        createdAt: item.createdAt?.toISOString() ?? "",
+        updatedAt: item.updatedAt?.toISOString() ?? "",
+      };
+    });
 
     return Response.json(data);
   } catch (error) {

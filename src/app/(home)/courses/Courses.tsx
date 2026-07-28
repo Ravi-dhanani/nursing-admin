@@ -105,64 +105,75 @@ export default function Courses() {
               ))}
             </div>
           ) : (
-            filteredCourses?.map((subject: CourseType, index: number) => (
-              <div
-                key={index}
-                onClick={() => {
-                  sessionStorage.setItem("activeTag", activeTag);
-                  sessionStorage.setItem("activeSubject", subject.objectId);
-                  router.push(
-                    `/courses/subject/${subject.objectId}/${createSlug(
-                      subject.o9_course_tag,
-                    )}?iapid=${subject.o1_course_iap_id}&name=${createSlug(
-                      language === "English"
-                        ? subject.eng1_course_name
-                        : subject.guj1_course_name,
-                    )}`,
-                  );
+            filteredCourses?.map((subject: CourseType) => {
+              console.log({
+                id: subject.objectId,
+                name: subject.eng1_course_name,
+                videos: subject.o5_free_videos,
+                type: typeof subject.o5_free_videos,
+              });
+              return (
+                <div
+                  key={subject.objectId}
+                  onClick={() => {
+                    sessionStorage.setItem("activeTag", activeTag);
+                    sessionStorage.setItem("activeSubject", subject.objectId);
 
-                  if (subject) {
-                    localStorage.setItem(
-                      "subjectName",
-                      JSON.stringify({
-                        english: subject.eng1_course_name,
-                        gujrati: subject.guj1_course_name,
-                      }),
+                    if (subject) {
+                      localStorage.setItem(
+                        "subjectName",
+                        JSON.stringify({
+                          english: subject.eng1_course_name,
+                          gujrati: subject.guj1_course_name,
+                        }),
+                      );
+                      localStorage.setItem(
+                        "subjectId",
+                        JSON.stringify({
+                          english: subject.eng2_course_desc,
+                          gujrati: subject.guj2_course_desc,
+                        }),
+                      );
+                      localStorage.setItem(
+                        "free-videos-limit",
+                        JSON.stringify(subject.o5_free_videos),
+                      );
+
+                      localStorage.setItem(
+                        "free-mcq-limit",
+                        JSON.stringify(subject.o3_free_mcq),
+                      );
+
+                      localStorage.setItem(
+                        "free-synopsis-limit",
+                        JSON.stringify(subject.o4_free_synopsis),
+                      );
+                    }
+
+                    router.push(
+                      `/courses/subject/${subject.objectId}/${createSlug(
+                        subject.o9_course_tag,
+                      )}?iapid=${subject.o1_course_iap_id}&name=${createSlug(
+                        language === "English"
+                          ? subject.eng1_course_name
+                          : subject.guj1_course_name,
+                      )}`,
                     );
-                    localStorage.setItem(
-                      "subjectId",
-                      JSON.stringify({
-                        english: subject.eng2_course_desc,
-                        gujrati: subject.guj2_course_desc,
-                      }),
-                    );
-                    localStorage.setItem(
-                      "free-mcq-limit",
-                      JSON.stringify(subject.o3_free_mcq),
-                    );
-                    localStorage.setItem(
-                      "free-videos-limit",
-                      JSON.stringify(subject.o5_free_videos),
-                    );
-                    localStorage.setItem(
-                      "free-synopsis-limit",
-                      JSON.stringify(subject.o4_free_synopsis),
-                    );
-                  }
-                }}
-                className={`group cursor-pointer rounded-md border border-l-4 px-6 py-4 shadow-sm transition-all duration-300 ease-out ${
-                  activeSubject === subject.objectId
-                    ? "-translate-y-[2px] scale-[1.02] border-primary bg-white font-medium text-primary"
-                    : "border-transparent bg-white hover:-translate-y-[2px] hover:scale-[1.02] hover:border-primary hover:text-primary hover:shadow-md"
-                }`}
-              >
-                <span className="select-none transition-all duration-300 group-hover:font-medium">
-                  {language === "English"
-                    ? subject.eng1_course_name
-                    : subject.guj1_course_name}
-                </span>
-              </div>
-            ))
+                  }}
+                  className={`group cursor-pointer rounded-md border border-l-4 px-6 py-4 shadow-sm transition-all duration-300 ease-out ${
+                    activeSubject === subject.objectId
+                      ? "-translate-y-[2px] scale-[1.02] border-primary bg-white font-medium text-primary"
+                      : "border-transparent bg-white hover:-translate-y-[2px] hover:scale-[1.02] hover:border-primary hover:text-primary hover:shadow-md"
+                  }`}
+                >
+                  <span className="select-none transition-all duration-300 group-hover:font-medium">
+                    {language === "English"
+                      ? subject.eng1_course_name
+                      : subject.guj1_course_name}
+                  </span>
+                </div>
+              );
+            })
           )}
         </div>
       </div>

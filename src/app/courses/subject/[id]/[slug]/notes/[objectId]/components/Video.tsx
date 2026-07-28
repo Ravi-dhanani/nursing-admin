@@ -8,6 +8,7 @@ import VideoPlayer from "./VideoPlayer";
 import VideoSidebar from "./VideoSidebar";
 
 import NoData from "@/common/NoData";
+import { usePremiumAccess } from "@/common/usePremiumAccess";
 import { toast } from "react-toastify";
 import { fetchVideos } from "../services/video.service";
 import { fetchVideoCategories } from "../services/videoCategory.service";
@@ -24,6 +25,12 @@ export default function VideoPage() {
 
   // ✅ load categories
   const hasFetchedCategories = useRef(false);
+
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+  const iapId = localStorage.getItem("iapid") || "";
+
+  const { hasAccess } = usePremiumAccess(user.a3_phone_number, iapId);
 
   useEffect(() => {
     if (!paramsId || hasFetchedCategories.current) return;
@@ -45,12 +52,8 @@ export default function VideoPage() {
     load();
   }, [paramsId]);
 
-  const hasFetchedVideos = useRef(false);
-
   useEffect(() => {
-    if (!selectedCategory || hasFetchedVideos.current) return;
-
-    hasFetchedVideos.current = true;
+    if (!selectedCategory) return;
 
     const load = async () => {
       try {
@@ -59,7 +62,11 @@ export default function VideoPage() {
         setVideos(data);
 
         if (data.length > 0) {
-          setActiveVideo(data[0].eng1_video_link);
+          if (data.length === 0) {
+            setActiveVideo(null);
+          } else {
+            setActiveVideo(data[0].eng1_video_link);
+          }
         }
       } catch (err) {
         toast.error("Something went wrong");

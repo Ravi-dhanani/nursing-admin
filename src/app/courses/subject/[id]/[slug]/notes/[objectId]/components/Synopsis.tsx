@@ -3,6 +3,7 @@ import { SynopsisItem } from "@/app/api/synopsis/route";
 import { useLanguage } from "@/common/LanguageContext";
 import Loading from "@/common/Loading";
 import NoData from "@/common/NoData";
+import { usePremiumAccess } from "@/common/usePremiumAccess";
 import { useQuetionsContextHook } from "@/hooks/QuetionsHook";
 import { useEffect, useRef, useState } from "react";
 
@@ -15,6 +16,11 @@ export default function Synopsis() {
   const [synopsisLimit, setSynopsisLimit] = useState<number | null>(null);
 
   const { language } = useLanguage();
+
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const iapId = localStorage.getItem("iapid") || "";
+
+  const { hasAccess } = usePremiumAccess(user.a3_phone_number, iapId);
 
   const hasFetchedSynopsis = useRef(false);
 
@@ -41,7 +47,11 @@ export default function Synopsis() {
         setSynopsisList(data);
 
         if (data.length > 0) {
-          setActiveItem(data[0].eng1_synp_link);
+          setActiveItem(
+            language === "English"
+              ? data[0].eng1_synp_link
+              : data[0].guj1_synp_link,
+          );
         }
       } catch (error) {
       } finally {
@@ -83,8 +93,8 @@ export default function Synopsis() {
             </div>
 
             {synopsisList.map((item, index) => {
-              const isLocked = synopsisLimit !== null && index >= synopsisLimit;
-
+              const isLocked =
+                !hasAccess && synopsisLimit !== null && index >= synopsisLimit;
               const link =
                 language === "English"
                   ? item.eng1_synp_link

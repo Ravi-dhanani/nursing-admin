@@ -1,6 +1,7 @@
 "use client";
 import { Video } from "@/app/api/video/route";
 import { useLanguage } from "@/common/LanguageContext";
+import { usePremiumAccess } from "@/common/usePremiumAccess";
 import { useEffect, useState } from "react";
 
 type Props = {
@@ -19,13 +20,17 @@ export default function VideoSidebar({
   const { language } = useLanguage();
   const [videoLimit, setVideoLimit] = useState<number | null>(null);
 
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+  const iapId = localStorage.getItem("iapid") || "";
+
+  const { hasAccess } = usePremiumAccess(user.a3_phone_number, iapId);
+
   // ✅ Load limit from localStorage
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const limit = localStorage.getItem("free-videos-limit");
-      if (limit) {
-        setVideoLimit(Number(limit));
-      }
+    const limit = localStorage.getItem("free-videos-limit");
+    if (limit) {
+      setVideoLimit(Number(limit));
     }
   }, []);
 
@@ -39,7 +44,8 @@ export default function VideoSidebar({
       </button>
 
       {videos.map((video, index) => {
-        const isLocked = videoLimit !== null && index >= videoLimit;
+        const isLocked =
+          !hasAccess && videoLimit !== null && index >= videoLimit;
 
         const videoUrl =
           language === "English"
