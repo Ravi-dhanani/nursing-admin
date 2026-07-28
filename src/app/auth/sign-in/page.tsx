@@ -1,4 +1,5 @@
 "use client";
+import { getDeviceId } from "@/lib/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -17,23 +18,13 @@ const schema = yup.object({
     .matches(/^[6-9]/, "Mobile number must start with 6-9"),
 });
 
-export function getDeviceId() {
-  let deviceId = localStorage.getItem("device_id");
-
-  if (!deviceId) {
-    deviceId = crypto.randomUUID();
-    localStorage.setItem("device_id", deviceId);
-  }
-
-  return deviceId;
-}
-
 type FormData = {
   mobile: string;
 };
 
 export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false);
+
   const {
     register,
     handleSubmit,
