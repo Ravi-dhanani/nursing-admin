@@ -1,5 +1,4 @@
 "use client";
-import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -17,6 +16,17 @@ const schema = yup.object({
     .length(10, "Mobile number must be exactly 10 digits")
     .matches(/^[6-9]/, "Mobile number must start with 6-9"),
 });
+
+export function getDeviceId() {
+  let deviceId = localStorage.getItem("device_id");
+
+  if (!deviceId) {
+    deviceId = crypto.randomUUID();
+    localStorage.setItem("device_id", deviceId);
+  }
+
+  return deviceId;
+}
 
 type FormData = {
   mobile: string;
@@ -61,17 +71,15 @@ export default function SignInPage() {
       const dbVisitorId = result?.data?.a10_web_id;
       const isNewUser = !dbVisitorId;
 
-      const fp = await FingerprintJS.load();
-      const fpResult = await fp.get();
-      const currentVisitorId = fpResult.visitorId;
+      const currentDeviceId = getDeviceId();
 
-      // if (dbVisitorId && dbVisitorId !== currentVisitorId) {
-      //   toast.error("You are already logged in on another device");
-      //   setIsLoading(false);
-      //   return;
-      // }
+      if (dbVisitorId && dbVisitorId !== currentDeviceId) {
+        toast.error("You are already logged in on another device");
+        setIsLoading(false);
+        return;
+      }
 
-      document.cookie = `visitorId=${currentVisitorId}; path=/; max-age=86400; SameSite=Lax; Secure`;
+      document.cookie = `visitorId=${currentDeviceId}; path=/; max-age=86400; SameSite=Lax; Secure`;
 
       if (isNewUser) {
         await fetch("/api/auth/update-visitor", {
@@ -81,7 +89,7 @@ export default function SignInPage() {
           },
           body: JSON.stringify({
             objectId: result.data.objectId,
-            visitorId: currentVisitorId,
+            visitorId: currentDeviceId,
           }),
         });
 

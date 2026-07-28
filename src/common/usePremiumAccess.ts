@@ -19,7 +19,6 @@ export function usePremiumAccess(a3_phone_number?: string, iapId?: string) {
         });
 
         const result = await res.json();
-        console.log(result);
         if (result.success) {
           setHasAccess(result.hasAccess);
         }
