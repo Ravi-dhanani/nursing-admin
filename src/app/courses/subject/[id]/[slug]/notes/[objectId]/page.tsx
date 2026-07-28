@@ -17,7 +17,6 @@ export default async function Page({ params, searchParams }: PageProps) {
   const { objectId, slug } = await params;
 
   if (!objectId) return null;
-
   return (
     <QuetionsHook paramsId={objectId}>
       <SubjectQuestionList courseName={slug} />

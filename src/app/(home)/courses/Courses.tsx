@@ -114,7 +114,7 @@ export default function Courses() {
                   router.push(
                     `/courses/subject/${subject.objectId}/${createSlug(
                       subject.o9_course_tag,
-                    )}?name=${createSlug(
+                    )}?iapid=${subject.o1_course_iap_id}&name=${createSlug(
                       language === "English"
                         ? subject.eng1_course_name
                         : subject.guj1_course_name,

@@ -34,6 +34,7 @@ export async function GET(req: Request) {
       objectId: item.id ?? "",
 
       a1_course_id: item.get("a1_course_id") ?? "",
+      o1_course_iap_id: item.get("o1_course_iap_id") ?? "",
 
       eng1_subject_name: item.get("eng1_subject_name") ?? "",
       guj1_subject_name: item.get("guj1_subject_name") ?? "",

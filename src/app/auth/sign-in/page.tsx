@@ -65,11 +65,11 @@ export default function SignInPage() {
       const fpResult = await fp.get();
       const currentVisitorId = fpResult.visitorId;
 
-      if (dbVisitorId && dbVisitorId !== currentVisitorId) {
-        toast.error("You are already logged in on another device");
-        setIsLoading(false);
-        return;
-      }
+      // if (dbVisitorId && dbVisitorId !== currentVisitorId) {
+      //   toast.error("You are already logged in on another device");
+      //   setIsLoading(false);
+      //   return;
+      // }
 
       document.cookie = `visitorId=${currentVisitorId}; path=/; max-age=86400; SameSite=Lax; Secure`;
 

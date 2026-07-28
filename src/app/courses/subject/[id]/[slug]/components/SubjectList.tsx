@@ -10,17 +10,20 @@ type SubjectItem = {
   eng2_video_title: string;
   eng2_course_desc?: string | null;
   objectId: string | null;
+  o1_course_iap_id: string;
 };
 
 interface SubjectListProps {
   id: string;
   slug: string;
   subject: string | null;
+  iapid: string | null;
 }
 
 export default function SubjectList({
   id,
   slug,
+  iapid,
   subject: subjectName,
 }: SubjectListProps) {
   const router = useRouter();
@@ -73,6 +76,8 @@ export default function SubjectList({
                       `/courses/subject/${id}/${slug}/notes/${subject.objectId}?name=${encodeURIComponent(subjectName ?? "")}`,
                     );
 
+                    localStorage.setItem("iapid", String(iapid));
+
                     localStorage.setItem(
                       "video_title",
                       subject.eng2_video_title || "",
@@ -83,6 +88,7 @@ export default function SubjectList({
                   {language === "English"
                     ? subject.eng1_subject_name
                     : subject.guj1_subject_name}
+                  {iapid}
                 </div>
               ))}
         </div>

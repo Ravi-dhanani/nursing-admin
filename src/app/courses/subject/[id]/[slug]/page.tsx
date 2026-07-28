@@ -10,6 +10,7 @@ type Props = {
   }>;
   searchParams: Promise<{
     name?: string;
+    iapid?: string;
   }>;
 };
 
@@ -19,6 +20,10 @@ export default async function SubjectPage({ params, searchParams }: Props) {
 
   const name = resolvedSearchParams?.name
     ? decodeURIComponent(resolvedSearchParams.name)
+    : "";
+
+  const iapid = resolvedSearchParams?.iapid
+    ? decodeURIComponent(resolvedSearchParams.iapid)
     : "";
 
   return (
@@ -35,7 +40,7 @@ export default async function SubjectPage({ params, searchParams }: Props) {
         </div>
 
         {/* RIGHT SIDE */}
-        <SubjectList id={id} slug={slug} subject={name} />
+        <SubjectList id={id} slug={slug} iapid={iapid} subject={name} />
       </div>
     </div>
   );

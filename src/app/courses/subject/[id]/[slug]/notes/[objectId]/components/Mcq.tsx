@@ -3,6 +3,7 @@ import { McqQuestion } from "@/app/api/mcq/route";
 import { useLanguage } from "@/common/LanguageContext";
 import Loading from "@/common/Loading";
 import NoData from "@/common/NoData";
+import { usePremiumAccess } from "@/common/usePremiumAccess";
 import { useQuetionsContextHook } from "@/hooks/QuetionsHook";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -21,6 +22,12 @@ export default function Mcq() {
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
   const { language } = useLanguage();
+
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+  const iapId = localStorage.getItem("iapid") || "";
+
+  const { hasAccess } = usePremiumAccess(user.a3_phone_number, iapId);
 
   const loadMcq = useCallback(
     async (isInitial: boolean = false) => {
@@ -108,7 +115,6 @@ export default function Mcq() {
       behavior: "smooth",
     });
   };
-
   useEffect(() => {
     const mcq = localStorage.getItem("free-mcq-limit");
 
@@ -123,7 +129,8 @@ export default function Mcq() {
   return (
     <div className="space-y-6">
       {questions?.map((q, index) => {
-        const isLocked = mcqLimit !== null && index >= mcqLimit;
+        // const isLocked = mcqLimit !== null && index >= mcqLimit;
+        const isLocked = !hasAccess && mcqLimit !== null && index >= mcqLimit;
 
         const options = [
           {
