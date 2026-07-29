@@ -55,8 +55,6 @@ export default function SubjectList({
     loadSubjects();
   }, [id]);
 
-  console.log(slug);
-
   return (
     <div className="h-full w-full overflow-y-auto lg:w-3/5">
       <div className="p-4">

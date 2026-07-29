@@ -41,8 +41,6 @@ export function usePaymentStatus(
 
         const result = await res.json();
 
-        console.log(result);
-
         if (result.success) {
           // Checks for either result.isPaid or falls back to result.hasAccess
           setIsPaid(Boolean(result.isPaid ?? result.hasAccess));
