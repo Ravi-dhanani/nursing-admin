@@ -1,5 +1,5 @@
-import BackButton from "@/app/courses/subject/[id]/[slug]/components/BackButton";
-import { Language } from "@/app/courses/subject/[id]/[slug]/components/ClientWrapper";
+import BackButton from "@/app/courses/subject/[id]/components/BackButton";
+import { Language } from "@/app/courses/subject/[id]/components/ClientWrapper";
 import { useLanguage } from "@/common/LanguageContext";
 import NoData from "@/common/NoData";
 import { useRouter } from "next/navigation";
@@ -165,7 +165,7 @@ export default function ContentDetails({ id }: { id?: string | string[] }) {
           </div>
 
           {/* RIGHT SIDE (Scrollable) */}
-          <div className="min-w-0 flex-1 overflow-hidden p-4">
+          <div className="max-w-screen-lg flex-1 overflow-scroll p-4">
             {loading ? (
               <div className="h-full w-full animate-pulse rounded-lg bg-gray-200" />
             ) : activeItem?.p1_pdf_file?.url ? (

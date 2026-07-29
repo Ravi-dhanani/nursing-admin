@@ -10,10 +10,11 @@ export const createSlug = (text?: string): string => {
 
   return text
     .toLowerCase()
-    .trim()
-    .replace(/&/g, "and")
-    .replace(/\s+/g, "-")
-    .replace(/[^\w-]+/g, "");
+    .replace(/[()]/g, "") // remove brackets
+    .replace(/\+/g, "-plus-") // keep +
+    .replace(/\s+/g, "-") // spaces -> -
+    .replace(/-+/g, "-") // remove duplicate -
+    .replace(/^-|-$/g, ""); // trim
 };
 
 export const formatText = (text?: string) =>
@@ -28,4 +29,22 @@ export function getDeviceId() {
   }
 
   return deviceId;
+}
+
+export function formatCourseTitle(slug: string) {
+  let title = decodeURIComponent(slug);
+
+  // -plus- => +
+  title = title.replace(/-plus-/gi, "+");
+
+  // Replace slug hyphens with spaces
+  title = title.replace(/-/g, " ");
+
+  title = title.replace(/\s*\(\s*/g, " (");
+  title = title.replace(/\s*\)\s*/g, ")");
+
+  // Capitalize only English words, keep Gujarati same
+  title = title.replace(/\b[a-z]/gi, (c) => c.toUpperCase());
+
+  return title.trim();
 }

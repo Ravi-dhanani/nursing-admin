@@ -16,9 +16,11 @@ import VideoPage from "./Video";
 
 interface SubjectQuestionListType {
   courseName: string;
+  subject_name: string;
 }
 export default function SubjectQuestionList({
   courseName,
+  subject_name,
 }: SubjectQuestionListType) {
   const [activeTab, setActiveTab] = useState("mcq");
   const [tabs, setTabs] = useState<any[]>([]);
@@ -68,19 +70,30 @@ export default function SubjectQuestionList({
   }, []);
 
   return (
-    <div className="p-5">
+    <div className="p-0 sm:p-2">
       <div className="flex flex-col gap-4">
         <BackButton />
 
-        <div className="mb-6 rounded-lg bg-white p-3">
-          <h1 className="select-none text-2xl font-bold text-black">
+        <div className="mb-3 rounded-xl border bg-white p-3 shadow-sm">
+          <h1 className="select-none text-xl font-bold text-gray-900 md:text-2xl">
             {formatText(courseName)}
           </h1>
-          <p className="mt-1 select-none text-sm text-black">
-            {language === "English"
-              ? subjectTitle.english
-              : subjectTitle.gujrati}
-          </p>
+
+          <div className="mt-2 space-y-2">
+            <div className="flex items-start gap-2 text-sm text-gray-600">
+              <span className="font-medium text-gray-800">Subject:</span>
+              <span>
+                {language === "English"
+                  ? subjectTitle.english
+                  : subjectTitle.gujrati}
+              </span>
+            </div>
+
+            <div className="flex items-start gap-2 text-sm text-gray-600">
+              <span className="font-medium text-gray-800">Topic:</span>
+              <span>{formatText(subject_name)}</span>
+            </div>
+          </div>
         </div>
       </div>
       {/* TAB HEADER */}
@@ -96,7 +109,9 @@ export default function SubjectQuestionList({
             }`}
           >
             <span>{tab.icon}</span>
-            <span className="font-medium">{tab.label}</span>
+            <span className="w-12 overflow-hidden truncate font-medium md:w-auto">
+              {tab.label}
+            </span>
           </button>
         ))}
       </div>

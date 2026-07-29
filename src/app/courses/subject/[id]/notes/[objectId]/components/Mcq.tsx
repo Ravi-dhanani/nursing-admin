@@ -1,0 +1,573 @@
+// "use client";
+// import { McqQuestion } from "@/app/api/mcq/route";
+// import { useLanguage } from "@/common/LanguageContext";
+// import Loading from "@/common/Loading";
+// import NoData from "@/common/NoData";
+// import { usePaymentStatus } from "@/common/usePaymentStatus";
+// import { usePremiumAccess } from "@/common/usePremiumAccess";
+// import { useQuetionsContextHook } from "@/hooks/QuetionsHook";
+// import { useCallback, useEffect, useRef, useState } from "react";
+
+// export default function Mcq() {
+//   const [showAnswer, setShowAnswer] = useState<Record<string, boolean>>({});
+//   const [questions, setQuestions] = useState<McqQuestion[]>([]);
+//   const [showTopBtn, setShowTopBtn] = useState(false);
+
+//   const [mcqLimit, setMcqLimit] = useState<number | null>(null);
+//   const [showDesc, setShowDesc] = useState<Record<string, boolean>>({});
+//   const { paramsId } = useQuetionsContextHook();
+//   const [page, setPage] = useState(1);
+//   const [loading, setLoading] = useState(false);
+//   const [hasMore, setHasMore] = useState(true);
+
+//   const loaderRef = useRef<HTMLDivElement | null>(null);
+
+//   const { language } = useLanguage();
+
+//   const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+//   const iapId = localStorage.getItem("iapid") || "";
+
+//   const { hasAccess } = usePremiumAccess(user.a3_phone_number, iapId);
+
+//   const { isPaid } = usePaymentStatus(user.a3_phone_number);
+//   const userHasPaid = hasAccess || isPaid;
+
+//   const loadMcq = useCallback(
+//     async (isInitial: boolean = false) => {
+//       if (!paramsId || loading || (!hasMore && !isInitial)) return;
+
+//       setLoading(true);
+//       const currentPage = isInitial ? 1 : page;
+
+//       try {
+//         const res = await fetch(
+//           `/api/mcq?id=${paramsId}&page=${currentPage}&limit=20`,
+//         );
+//         const result = await res.json();
+//         const newQuestions = result.data || [];
+
+//         setQuestions((prev) =>
+//           isInitial ? newQuestions : [...prev, ...newQuestions],
+//         );
+//         setHasMore(result.hasMore);
+//       } catch (error) {
+//       } finally {
+//         setLoading(false);
+//       }
+//     },
+//     [paramsId, page, hasMore, loading],
+//   );
+
+//   const hasFetched = useRef(false);
+
+//   useEffect(() => {
+//     if (!paramsId || hasFetched.current) return;
+
+//     hasFetched.current = true;
+
+//     setQuestions([]);
+//     setPage(1);
+//     setHasMore(true);
+//     setShowAnswer({});
+//     setShowDesc({});
+
+//     loadMcq(true);
+//   }, [paramsId]);
+
+//   useEffect(() => {
+//     if (page > 1) {
+//       loadMcq();
+//     }
+//   }, [page]);
+
+//   useEffect(() => {
+//     const observer = new IntersectionObserver(
+//       (entries) => {
+//         if (entries[0].isIntersecting && hasMore && !loading) {
+//           setPage((prev) => prev + 1);
+//         }
+//       },
+//       { threshold: 0.1 },
+//     );
+
+//     const current = loaderRef.current;
+//     if (current) observer.observe(current);
+
+//     return () => {
+//       if (current) observer.unobserve(current);
+//     };
+//   }, [hasMore, loading]);
+
+//   useEffect(() => {
+//     const handleScroll = () => {
+//       if (window.scrollY > 700) {
+//         setShowTopBtn(true);
+//       } else {
+//         setShowTopBtn(false);
+//       }
+//     };
+
+//     window.addEventListener("scroll", handleScroll);
+
+//     return () => window.removeEventListener("scroll", handleScroll);
+//   }, []);
+
+//   const scrollToTop = () => {
+//     window.scrollTo({
+//       top: 0,
+//       behavior: "smooth",
+//     });
+//   };
+//   useEffect(() => {
+//     const mcq = localStorage.getItem("free-mcq-limit");
+
+//     if (mcq) {
+//       const parsed = JSON.parse(mcq);
+//       setMcqLimit(parsed);
+//     }
+//   }, []);
+
+//   if (!questions.length && !loading) return <NoData title="No MCQ Available" />;
+
+//   return (
+//     <div className="space-y-6">
+//       {questions?.map((q, index) => {
+//         // const isLocked = mcqLimit !== null && index >= mcqLimit;
+//         const isLocked = !userHasPaid && mcqLimit !== null && index >= mcqLimit;
+//         const options = [
+//           {
+//             key: "A",
+//             text:
+//               language === "English"
+//                 ? q.eng3_que_option_a
+//                 : q.guj3_que_option_a,
+//           },
+//           {
+//             key: "B",
+//             text:
+//               language === "English"
+//                 ? q.eng4_que_option_b
+//                 : q.guj4_que_option_b,
+//           },
+//           {
+//             key: "C",
+//             text:
+//               language === "English"
+//                 ? q.eng5_que_option_c
+//                 : q.guj5_que_option_c,
+//           },
+//           {
+//             key: "D",
+//             text:
+//               language === "English"
+//                 ? q.eng6_que_option_d
+//                 : q.guj6_que_option_d,
+//           },
+//         ];
+
+//         return (
+//           <div key={`${q.objectId}-${index}`} className="relative">
+//             {/* 🔒 Overlay */}
+//             {isLocked && (
+//               <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-white/70 backdrop-blur-sm">
+//                 <p className="text-center font-semibold text-gray-700">
+//                   🔒 Unlock more MCQs
+//                 </p>
+//               </div>
+//             )}
+
+//             {/* Content */}
+//             <div
+//               className={`rounded-lg border bg-white p-4 shadow-sm ${
+//                 isLocked ? "pointer-events-none blur-sm" : ""
+//               }`}
+//             >
+//               <h3 className="mb-3 select-none font-semibold">
+//                 {index + 1}.{" "}
+//                 {language === "English" ? q.eng1_que_title : q.guj1_que_title}
+//               </h3>
+
+//               <div className="space-y-2">
+//                 {options.map((opt) => (
+//                   <div
+//                     key={opt.key}
+//                     className={`select-none rounded-md border p-2 transition-colors ${
+//                       showAnswer[q.objectId] &&
+//                       opt.key === q.eng8_correct_answer
+//                         ? "border-green-500 bg-green-50"
+//                         : "hover:bg-gray-50"
+//                     }`}
+//                   >
+//                     <span className="mr-2 font-bold">{opt.key}.</span>{" "}
+//                     {opt.text}
+//                   </div>
+//                 ))}
+//               </div>
+
+//               <div className="mt-4 flex flex-wrap gap-3">
+//                 <button
+//                   onClick={() =>
+//                     setShowAnswer((p) => ({
+//                       ...p,
+//                       [q.objectId]: !p[q.objectId],
+//                     }))
+//                   }
+//                   className="select-none rounded bg-primary px-4 py-2 text-sm text-white"
+//                 >
+//                   {showAnswer[q.objectId] ? "Hide Answer" : "View Answer"}
+//                 </button>
+
+//                 {q.eng9_que_other_desc && (
+//                   <button
+//                     onClick={() =>
+//                       setShowDesc((p) => ({
+//                         ...p,
+//                         [q.objectId]: !p[q.objectId],
+//                       }))
+//                     }
+//                     className="select-none rounded bg-gray-600 px-4 py-2 text-sm text-white hover:bg-gray-700"
+//                   >
+//                     {showDesc[q.objectId]
+//                       ? "Hide Description"
+//                       : "Show Description"}
+//                   </button>
+//                 )}
+//               </div>
+
+//               {showAnswer[q.objectId] && (
+//                 <p className="mt-3 select-none rounded border border-green-200 bg-green-50 p-2 font-bold text-green-700">
+//                   Correct Answer: {q.eng8_correct_answer}
+//                 </p>
+//               )}
+
+//               {showDesc[q.objectId] && q.eng9_que_other_desc && (
+//                 <div className="mt-3 select-none rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-gray-800">
+//                   <p className="mb-1 font-semibold">Explanation:</p>
+//                   {q.eng9_que_other_desc}
+//                 </div>
+//               )}
+//             </div>
+//           </div>
+//         );
+//       })}
+
+//       {/* 🔝 Scroll to top */}
+//       {showTopBtn && (
+//         <button
+//           onClick={scrollToTop}
+//           className="fixed bottom-6 right-6 z-50 rounded-full bg-primary px-4 py-3 text-white shadow-lg transition hover:scale-105"
+//         >
+//           ↑ Top
+//         </button>
+//       )}
+
+//       {/* 🔄 Loader */}
+//       <div
+//         ref={loaderRef}
+//         className="flex items-center justify-center bg-white py-10 font-bold italic text-primary"
+//       >
+//         {loading ? <Loading /> : !hasMore ? "No more MCQ available..." : null}
+//       </div>
+//     </div>
+//   );
+// }
+
+"use client";
+import { McqQuestion } from "@/app/api/mcq/route";
+import { useLanguage } from "@/common/LanguageContext";
+import Loading from "@/common/Loading";
+import NoData from "@/common/NoData";
+import { usePaymentStatus } from "@/common/usePaymentStatus";
+import { usePremiumAccess } from "@/common/usePremiumAccess";
+import { useQuetionsContextHook } from "@/hooks/QuetionsHook";
+import { useCallback, useEffect, useRef, useState } from "react";
+
+export default function Mcq() {
+  const [showAnswer, setShowAnswer] = useState<Record<string, boolean>>({});
+  const [questions, setQuestions] = useState<McqQuestion[]>([]);
+  const [showTopBtn, setShowTopBtn] = useState(false);
+
+  const [mcqLimit, setMcqLimit] = useState<number | null>(null);
+  const [showDesc, setShowDesc] = useState<Record<string, boolean>>({});
+  const { paramsId } = useQuetionsContextHook();
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+
+  // Client-side LocalStorage States
+  const [userMobile, setUserMobile] = useState<string>("");
+  const [iapId, setIapId] = useState<string>("");
+
+  const loaderRef = useRef<HTMLDivElement | null>(null);
+  const { language } = useLanguage();
+
+  // Safely read LocalStorage after mount
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+          const parsedUser = JSON.parse(storedUser);
+          if (parsedUser?.a3_phone_number) {
+            setUserMobile(String(parsedUser.a3_phone_number));
+          }
+        }
+
+        const storedIapId = localStorage.getItem("iapid");
+        if (storedIapId) {
+          setIapId(storedIapId);
+        }
+
+        const storedMcqLimit = localStorage.getItem("free-mcq-limit");
+        if (storedMcqLimit) {
+          setMcqLimit(JSON.parse(storedMcqLimit));
+        }
+      } catch (err) {
+        console.error("Error reading localStorage:", err);
+      }
+    }
+  }, []);
+
+  // Access Hooks
+  const { hasAccess } = usePremiumAccess(userMobile, iapId);
+  const { isPaid } = usePaymentStatus(userMobile);
+
+  // User gets full access if EITHER check passes
+  const userHasPaid = Boolean(hasAccess || isPaid);
+
+  console.log(hasAccess, isPaid);
+
+  const loadMcq = useCallback(
+    async (isInitial: boolean = false) => {
+      if (!paramsId || loading || (!hasMore && !isInitial)) return;
+
+      setLoading(true);
+      const currentPage = isInitial ? 1 : page;
+
+      try {
+        const res = await fetch(
+          `/api/mcq?id=${paramsId}&page=${currentPage}&limit=20`,
+        );
+        const result = await res.json();
+        const newQuestions = result.data || [];
+
+        setQuestions((prev) =>
+          isInitial ? newQuestions : [...prev, ...newQuestions],
+        );
+        setHasMore(result.hasMore);
+      } catch (error) {
+        console.error("Error fetching MCQs:", error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [paramsId, page, hasMore, loading],
+  );
+
+  const hasFetched = useRef(false);
+
+  useEffect(() => {
+    if (!paramsId || hasFetched.current) return;
+
+    hasFetched.current = true;
+
+    setQuestions([]);
+    setPage(1);
+    setHasMore(true);
+    setShowAnswer({});
+    setShowDesc({});
+
+    loadMcq(true);
+  }, [paramsId, loadMcq]);
+
+  useEffect(() => {
+    if (page > 1) {
+      loadMcq();
+    }
+  }, [page]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loading) {
+          setPage((prev) => prev + 1);
+        }
+      },
+      { threshold: 0.1 },
+    );
+
+    const current = loaderRef.current;
+    if (current) observer.observe(current);
+
+    return () => {
+      if (current) observer.unobserve(current);
+    };
+  }, [hasMore, loading]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 700) {
+        setShowTopBtn(true);
+      } else {
+        setShowTopBtn(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
+  if (!questions.length && !loading) return <NoData title="No MCQ Available" />;
+
+  return (
+    <div className="space-y-6">
+      {questions?.map((q, index) => {
+        // If userHasPaid is true, isLocked will always be false
+        const isLocked = !userHasPaid && mcqLimit !== null && index >= mcqLimit;
+
+        const options = [
+          {
+            key: "A",
+            text:
+              language === "English"
+                ? q.eng3_que_option_a
+                : q.guj3_que_option_a,
+          },
+          {
+            key: "B",
+            text:
+              language === "English"
+                ? q.eng4_que_option_b
+                : q.guj4_que_option_b,
+          },
+          {
+            key: "C",
+            text:
+              language === "English"
+                ? q.eng5_que_option_c
+                : q.guj5_que_option_c,
+          },
+          {
+            key: "D",
+            text:
+              language === "English"
+                ? q.eng6_que_option_d
+                : q.guj6_que_option_d,
+          },
+        ];
+
+        return (
+          <div key={`${q.objectId}-${index}`} className="relative">
+            {/* 🔒 Overlay */}
+            {isLocked && (
+              <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-white/70 backdrop-blur-sm">
+                <p className="text-center font-semibold text-gray-700">
+                  🔒 Unlock more MCQs
+                </p>
+              </div>
+            )}
+
+            {/* Content */}
+            <div
+              className={`rounded-lg border bg-white p-4 shadow-sm ${
+                isLocked ? "pointer-events-none blur-sm" : ""
+              }`}
+            >
+              <h3 className="mb-3 select-none font-semibold">
+                {index + 1}.{" "}
+                {language === "English" ? q.eng1_que_title : q.guj1_que_title}
+              </h3>
+
+              <div className="space-y-2">
+                {options.map((opt) => (
+                  <div
+                    key={opt.key}
+                    className={`select-none rounded-md border p-2 transition-colors ${
+                      showAnswer[q.objectId] &&
+                      opt.key === q.eng8_correct_answer
+                        ? "border-green-500 bg-green-50"
+                        : "hover:bg-gray-50"
+                    }`}
+                  >
+                    <span className="mr-2 font-bold">{opt.key}.</span>{" "}
+                    {opt.text}
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-4 flex flex-wrap gap-3">
+                <button
+                  onClick={() =>
+                    setShowAnswer((p) => ({
+                      ...p,
+                      [q.objectId]: !p[q.objectId],
+                    }))
+                  }
+                  className="select-none rounded bg-primary px-4 py-2 text-sm text-white"
+                >
+                  {showAnswer[q.objectId] ? "Hide Answer" : "View Answer"}
+                </button>
+
+                {q.eng9_que_other_desc && (
+                  <button
+                    onClick={() =>
+                      setShowDesc((p) => ({
+                        ...p,
+                        [q.objectId]: !p[q.objectId],
+                      }))
+                    }
+                    className="select-none rounded bg-gray-600 px-4 py-2 text-sm text-white hover:bg-gray-700"
+                  >
+                    {showDesc[q.objectId]
+                      ? "Hide Description"
+                      : "Show Description"}
+                  </button>
+                )}
+              </div>
+
+              {showAnswer[q.objectId] && (
+                <p className="mt-3 select-none rounded border border-green-200 bg-green-50 p-2 font-bold text-green-700">
+                  Correct Answer: {q.eng8_correct_answer}
+                </p>
+              )}
+
+              {showDesc[q.objectId] && q.eng9_que_other_desc && (
+                <div className="mt-3 select-none rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-gray-800">
+                  <p className="mb-1 font-semibold">Explanation:</p>
+                  {q.eng9_que_other_desc}
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })}
+
+      {/* 🔝 Scroll to top */}
+      {showTopBtn && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-6 right-6 z-50 rounded-full bg-primary px-4 py-3 text-white shadow-lg transition hover:scale-105"
+        >
+          ↑ Top
+        </button>
+      )}
+
+      {/* 🔄 Loader */}
+      <div
+        ref={loaderRef}
+        className="flex items-center justify-center bg-white py-10 font-bold italic text-primary"
+      >
+        {loading ? <Loading /> : !hasMore ? "No more MCQ available..." : null}
+      </div>
+    </div>
+  );
+}

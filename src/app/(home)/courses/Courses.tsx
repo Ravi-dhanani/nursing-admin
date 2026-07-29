@@ -55,21 +55,25 @@ export default function Courses() {
   }, []);
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      <div className="sticky top-0 h-screen w-80 overflow-y-auto border-r bg-gray-200 p-4">
-        <div className="space-y-3">
+    <div className="flex min-h-screen flex-col bg-gray-100 md:flex-row">
+      {/* Sidebar */}
+      <div className="w-full border-b bg-gray-200 p-3 md:sticky md:top-0 md:h-screen md:w-80 md:overflow-y-auto md:border-b-0 md:border-r md:p-4">
+        <div className="flex gap-3 overflow-x-auto md:flex-col md:space-y-3 md:overflow-visible">
           {loading
             ? Array.from({ length: 6 }).map((_, i) => (
                 <div
                   key={i}
-                  className="h-10 w-full animate-pulse rounded-md bg-gray-300"
+                  className="h-10 min-w-[150px] animate-pulse rounded-md bg-gray-300 md:w-full"
                 />
               ))
             : uniqueTags.map((tag, index) => (
                 <button
                   key={index}
-                  onClick={() => setActiveTag(tag)}
-                  className={`w-full select-none rounded-md border px-4 py-3 text-left transition-all duration-200 ${
+                  onClick={() => {
+                    setActiveTag(tag);
+                    setActiveSubject("");
+                  }}
+                  className={`min-w-[200px] rounded-md border px-4 py-3 text-left transition-all md:w-full ${
                     activeTag
                       ? activeTag === tag
                         ? "border-l-4 border-primary bg-white font-semibold text-primary shadow"
@@ -85,11 +89,12 @@ export default function Courses() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-6">
-        <div className="mx-auto max-w-3xl space-y-4 will-change-transform">
+      {/* Content */}
+      <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+        <div className="mx-auto max-w-3xl space-y-4">
           {/* TITLE */}
-          <h2 className="select-none text-lg font-semibold text-gray-700">
-            {activeTag}
+          <h2 className="text-lg font-semibold text-gray-700 sm:text-xl">
+            {selectedTag}
           </h2>
 
           {/* SUBJECT LIST */}
@@ -98,82 +103,67 @@ export default function Courses() {
               {Array.from({ length: 6 }).map((_, i) => (
                 <div
                   key={i}
-                  className="animate-pulse rounded-md border bg-white px-6 py-4"
+                  className="animate-pulse rounded-md border bg-white px-5 py-4"
                 >
-                  <div className="h-4 w-1/2 rounded bg-gray-300"></div>
+                  <div className="h-4 w-1/2 rounded bg-gray-300" />
                 </div>
               ))}
             </div>
           ) : (
-            filteredCourses?.map((subject: CourseType) => {
-              console.log({
-                id: subject.objectId,
-                name: subject.eng1_course_name,
-                videos: subject.o5_free_videos,
-                type: typeof subject.o5_free_videos,
-              });
-              return (
-                <div
-                  key={subject.objectId}
-                  onClick={() => {
-                    sessionStorage.setItem("activeTag", activeTag);
-                    sessionStorage.setItem("activeSubject", subject.objectId);
+            filteredCourses?.map((subject: CourseType) => (
+              <div
+                key={subject.objectId}
+                onClick={() => {
+                  sessionStorage.setItem("activeTag", selectedTag);
 
-                    if (subject) {
-                      localStorage.setItem(
-                        "subjectName",
-                        JSON.stringify({
-                          english: subject.eng1_course_name,
-                          gujrati: subject.guj1_course_name,
-                        }),
-                      );
-                      localStorage.setItem(
-                        "subjectId",
-                        JSON.stringify({
-                          english: subject.eng2_course_desc,
-                          gujrati: subject.guj2_course_desc,
-                        }),
-                      );
-                      localStorage.setItem(
-                        "free-videos-limit",
-                        JSON.stringify(subject.o5_free_videos),
-                      );
+                  sessionStorage.setItem("activeSubject", subject.objectId);
 
-                      localStorage.setItem(
-                        "free-mcq-limit",
-                        JSON.stringify(subject.o3_free_mcq),
-                      );
+                  localStorage.setItem(
+                    "subjectName",
+                    JSON.stringify({
+                      english: subject.eng1_course_name,
+                      gujrati: subject.guj1_course_name,
+                    }),
+                  );
 
-                      localStorage.setItem(
-                        "free-synopsis-limit",
-                        JSON.stringify(subject.o4_free_synopsis),
-                      );
-                    }
+                  localStorage.setItem(
+                    "free-videos-limit",
+                    JSON.stringify(subject.o5_free_videos),
+                  );
 
-                    router.push(
-                      `/courses/subject/${subject.objectId}/${createSlug(
-                        subject.o9_course_tag,
-                      )}?iapid=${subject.o1_course_iap_id}&name=${createSlug(
-                        language === "English"
-                          ? subject.eng1_course_name
-                          : subject.guj1_course_name,
-                      )}`,
-                    );
-                  }}
-                  className={`group cursor-pointer rounded-md border border-l-4 px-6 py-4 shadow-sm transition-all duration-300 ease-out ${
-                    activeSubject === subject.objectId
-                      ? "-translate-y-[2px] scale-[1.02] border-primary bg-white font-medium text-primary"
-                      : "border-transparent bg-white hover:-translate-y-[2px] hover:scale-[1.02] hover:border-primary hover:text-primary hover:shadow-md"
-                  }`}
-                >
-                  <span className="select-none transition-all duration-300 group-hover:font-medium">
-                    {language === "English"
-                      ? subject.eng1_course_name
-                      : subject.guj1_course_name}
-                  </span>
-                </div>
-              );
-            })
+                  localStorage.setItem(
+                    "free-mcq-limit",
+                    JSON.stringify(subject.o3_free_mcq),
+                  );
+
+                  localStorage.setItem(
+                    "free-synopsis-limit",
+                    JSON.stringify(subject.o4_free_synopsis),
+                  );
+
+                  router.push(
+                    `/courses/subject/${subject.objectId}?iapid=${subject.o1_course_iap_id}&name=${createSlug(
+                      language === "English"
+                        ? subject.eng1_course_name
+                        : subject.guj1_course_name,
+                    )}&course_name=${encodeURIComponent(
+                      subject.o9_course_tag,
+                    )}`,
+                  );
+                }}
+                className={`group cursor-pointer rounded-lg border bg-white px-5 py-4 shadow-sm transition-all duration-300 sm:px-6 ${
+                  activeSubject === subject.objectId
+                    ? "border-primary text-primary shadow-md"
+                    : "hover:-translate-y-1 hover:border-primary hover:text-primary hover:shadow-md"
+                }`}
+              >
+                <span className="select-none text-sm font-medium sm:text-base">
+                  {language === "English"
+                    ? subject.eng1_course_name
+                    : subject.guj1_course_name}
+                </span>
+              </div>
+            ))
           )}
         </div>
       </div>

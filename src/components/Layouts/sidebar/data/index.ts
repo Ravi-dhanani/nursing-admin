@@ -33,24 +33,25 @@ export const NAV_DATA = [
           },
         ],
       },
-      {
-        title: "Settings",
-        url: "/settings",
-        icon: Icons.SettingIcon,
-        items: [],
-      },
+      // {
+      //   title: "Settings",
+      //   url: "/settings",
+      //   icon: Icons.SettingIcon,
+      //   items: [],
+      // },
       {
         title: "Help",
         url: "/help",
         icon: Icons.HelpIcon,
         items: [],
       },
-      {
-        title: "Logout",
-        url: "/logout",
-        icon: Icons.LogoutIcon,
-        items: [],
-      },
+      // {
+      //   title: "Logout",
+      //   url: "/logout",
+      //   icon: Icons.LogoutIcon,
+      //   onclick: () => {},
+      //   items: [],
+      // },
     ],
   },
 

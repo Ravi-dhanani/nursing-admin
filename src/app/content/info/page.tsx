@@ -62,7 +62,7 @@ export default function Page() {
                     }),
                   );
                 }}
-                className="group cursor-pointer rounded-2xl border border-gray-300 p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:bg-primary hover:shadow-lg"
+                className="group cursor-pointer rounded-2xl border border-gray-300 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:bg-primary hover:shadow-lg"
               >
                 <h2 className="mb-2 select-none text-lg font-semibold text-black transition-colors duration-300 group-hover:text-white">
                   {language === "English"

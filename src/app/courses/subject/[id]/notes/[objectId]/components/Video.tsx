@@ -8,7 +8,6 @@ import VideoPlayer from "./VideoPlayer";
 import VideoSidebar from "./VideoSidebar";
 
 import NoData from "@/common/NoData";
-import { usePremiumAccess } from "@/common/usePremiumAccess";
 import { toast } from "react-toastify";
 import { fetchVideos } from "../services/video.service";
 import { fetchVideoCategories } from "../services/videoCategory.service";
@@ -25,12 +24,6 @@ export default function VideoPage() {
 
   // ✅ load categories
   const hasFetchedCategories = useRef(false);
-
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
-
-  const iapId = localStorage.getItem("iapid") || "";
-
-  const { hasAccess } = usePremiumAccess(user.a3_phone_number, iapId);
 
   useEffect(() => {
     if (!paramsId || hasFetchedCategories.current) return;
@@ -114,12 +107,14 @@ export default function VideoPage() {
         <VideoPlayer videoUrl={activeVideo} />
       </div>
 
-      <VideoSidebar
-        videos={videos}
-        activeVideo={activeVideo}
-        onSelect={setActiveVideo}
-        onBack={() => setSelectedCategory(null)}
-      />
+      <div className="h-auto">
+        <VideoSidebar
+          videos={videos}
+          activeVideo={activeVideo}
+          onSelect={setActiveVideo}
+          onBack={() => setSelectedCategory(null)}
+        />
+      </div>
     </div>
   );
 }
