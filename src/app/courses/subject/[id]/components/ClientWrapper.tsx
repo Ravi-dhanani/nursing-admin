@@ -20,28 +20,45 @@ export default function ClientWrapper() {
   });
 
   const [isLoaded, setIsLoaded] = useState(false);
-
   const { language } = useLanguage();
 
   useEffect(() => {
-    const stored = localStorage.getItem("subjectName");
-    const postId = localStorage.getItem("subjectId");
-
-    if (stored) {
+    // 1. Get Subject Title
+    const storedTitle = localStorage.getItem("subjectName");
+    if (storedTitle) {
       try {
-        const parsed = JSON.parse(stored);
-        setSubjectTitle(parsed);
+        const parsed = JSON.parse(storedTitle);
+        if (typeof parsed === "object" && parsed !== null) {
+          setSubjectTitle(parsed);
+        } else {
+          setSubjectTitle({ english: String(parsed), gujrati: String(parsed) });
+        }
       } catch {
-        setSubjectTitle({ english: "", gujrati: "" });
+        setSubjectTitle({ english: storedTitle, gujrati: storedTitle });
       }
     }
+
+    // 2. Get Subject ID (Check subjectId first, fallback to subId or iapid)
+    const postId =
+      localStorage.getItem("subjectId") ||
+      localStorage.getItem("subId") ||
+      localStorage.getItem("postId");
 
     if (postId) {
       try {
         const parsed = JSON.parse(postId);
-        setSubjectId(parsed);
+        if (typeof parsed === "object" && parsed !== null) {
+          setSubjectId({
+            english: String(parsed.english || parsed.id || ""),
+            gujrati: String(
+              parsed.gujrati || parsed.gujarati || parsed.english || "",
+            ),
+          });
+        } else {
+          setSubjectId({ english: String(parsed), gujrati: String(parsed) });
+        }
       } catch {
-        setSubjectId({ english: "", gujrati: "" });
+        setSubjectId({ english: postId, gujrati: postId });
       }
     }
 
@@ -49,7 +66,9 @@ export default function ClientWrapper() {
   }, []);
 
   const activeSubId =
-    language === "English" ? subjectId.english : subjectId.gujrati;
+    language === "English"
+      ? subjectId.english || subjectId.gujrati
+      : subjectId.gujrati || subjectId.english;
 
   return (
     <>
@@ -57,9 +76,16 @@ export default function ClientWrapper() {
         {language === "English" ? subjectTitle.english : subjectTitle.gujrati}
       </h1>
 
-      {/* Only render PostContent once localStorage values are loaded and activeSubId is present */}
-      {isLoaded && activeSubId ? (
-        <PostContent subId={activeSubId} />
+      {isLoaded ? (
+        activeSubId ? (
+          <PostContent subId={activeSubId} />
+        ) : (
+          <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-600">
+            <strong>No subject ID found in LocalStorage.</strong>
+            <br />
+            Please go back and select a subject again.
+          </div>
+        )
       ) : (
         <div>Loading post content...</div>
       )}
