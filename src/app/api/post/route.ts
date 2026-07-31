@@ -71,11 +71,13 @@ export async function GET(req: NextRequest) {
       },
     );
 
+    console.log(wpRes);
+
     // If WordPress responded with non-200 (404, 403, 500, etc.)
     if (!wpRes.ok) {
       const errorText = await wpRes.text();
       console.error(
-        `[Vercel Server] WP Fetch failed for ID ${id}. Status: ${wpRes.status}. Response: ${errorText}`,
+        `[WP API Error] Status: ${wpRes.status} | Details: ${errorText}`,
       );
       return NextResponse.json(
         { error: `WordPress API returned status ${wpRes.status}` },
