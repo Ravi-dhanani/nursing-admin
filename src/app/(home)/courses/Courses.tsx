@@ -119,14 +119,6 @@ export default function Courses() {
                   sessionStorage.setItem("activeSubject", subject.objectId);
 
                   localStorage.setItem(
-                    "subjectName",
-                    JSON.stringify({
-                      english: subject.eng1_course_name,
-                      gujrati: subject.guj1_course_name,
-                    }),
-                  );
-
-                  localStorage.setItem(
                     "free-videos-limit",
                     JSON.stringify(subject.o5_free_videos),
                   );
@@ -141,6 +133,21 @@ export default function Courses() {
                     JSON.stringify(subject.o4_free_synopsis),
                   );
 
+                  localStorage.setItem(
+                    "subjectName",
+                    JSON.stringify({
+                      english: subject.eng1_course_name,
+                      gujrati: subject.guj1_course_name,
+                    }),
+                  );
+
+                  localStorage.setItem(
+                    "subjectId",
+                    JSON.stringify({
+                      english: subject.eng2_course_desc,
+                      gujrati: subject.guj2_course_desc,
+                    }),
+                  );
                   router.push(
                     `/courses/subject/${subject.objectId}?iapid=${subject.o1_course_iap_id}&name=${createSlug(
                       language === "English"
