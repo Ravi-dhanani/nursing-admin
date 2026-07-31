@@ -336,8 +336,6 @@ export default function Mcq() {
   // User gets full access if EITHER check passes
   const userHasPaid = Boolean(hasAccess || isPaid);
 
-  console.log(hasAccess, isPaid);
-
   const loadMcq = useCallback(
     async (isInitial: boolean = false) => {
       if (!paramsId || loading || (!hasMore && !isInitial)) return;

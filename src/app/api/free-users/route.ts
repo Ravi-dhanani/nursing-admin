@@ -38,8 +38,6 @@ export async function POST(req: NextRequest) {
     const paymentStatus = userRecord.get("paymentStatus");
     const hasAccess = Number(paymentStatus) === 1;
 
-    console.log(hasAccess);
-
     return NextResponse.json({
       success: true,
       hasAccess,

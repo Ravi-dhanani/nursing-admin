@@ -99,7 +99,6 @@ export default function VerifyPage() {
 
       router.push("/courses");
     } catch (error) {
-      console.log(error);
       toast.error("Something went wrong");
     }
   };
