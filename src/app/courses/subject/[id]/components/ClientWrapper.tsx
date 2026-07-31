@@ -19,6 +19,8 @@ export default function ClientWrapper() {
     gujrati: "",
   });
 
+  const [isLoaded, setIsLoaded] = useState(false);
+
   const { language } = useLanguage();
 
   useEffect(() => {
@@ -42,15 +44,25 @@ export default function ClientWrapper() {
         setSubjectId({ english: "", gujrati: "" });
       }
     }
+
+    setIsLoaded(true);
   }, []);
+
+  const activeSubId =
+    language === "English" ? subjectId.english : subjectId.gujrati;
+
   return (
     <>
       <h1 className="mb-4 select-none text-2xl font-bold text-primary">
         {language === "English" ? subjectTitle.english : subjectTitle.gujrati}
       </h1>
-      <PostContent
-        subId={language === "English" ? subjectId.english : subjectId.gujrati}
-      />
+
+      {/* Only render PostContent once localStorage values are loaded and activeSubId is present */}
+      {isLoaded && activeSubId ? (
+        <PostContent subId={activeSubId} />
+      ) : (
+        <div>Loading post content...</div>
+      )}
     </>
   );
 }
