@@ -1,6 +1,7 @@
 "use client";
+
 import { useLanguage } from "@/common/LanguageContext";
-import Loading from "@/common/Loading";
+import NoData from "@/common/NoData";
 import { useEffect, useState } from "react";
 import PostContent from "./PostContent";
 
@@ -10,59 +11,45 @@ export interface Language {
 }
 
 export default function ClientWrapper() {
-  const [subjectTitle, setSubjectTitle] = useState<Language>({
-    english: "",
-    gujrati: "",
-  });
-
-  const [subjectId, setSubjectId] = useState<Language>({
-    english: "",
-    gujrati: "",
-  });
-
-  const [isLoaded, setIsLoaded] = useState(false);
-
   const { language } = useLanguage();
 
+  const [subjectTitle, setSubjectTitle] = useState<Language | null>(null);
+  const [subjectId, setSubjectId] = useState<Language | null>(null);
+
   useEffect(() => {
-    const stored = localStorage.getItem("subjectName");
-    const postId = localStorage.getItem("subjectId");
+    const storedTitle = localStorage.getItem("subjectName");
+    const storedId = localStorage.getItem("subjectId");
 
-    if (stored) {
+    if (storedTitle) {
       try {
-        const parsed = JSON.parse(stored);
-        setSubjectTitle(parsed);
+        setSubjectTitle(JSON.parse(storedTitle));
       } catch {
-        setSubjectTitle({ english: "", gujrati: "" });
+        setSubjectTitle(null);
       }
     }
 
-    if (postId) {
+    if (storedId) {
       try {
-        const parsed = JSON.parse(postId);
-        setSubjectId(parsed);
+        setSubjectId(JSON.parse(storedId));
       } catch {
-        setSubjectId({ english: "", gujrati: "" });
+        setSubjectId(null);
       }
     }
-
-    setIsLoaded(true);
   }, []);
 
   const activeSubId =
-    language === "English" ? subjectId.english : subjectId.gujrati;
+    language === "English" ? subjectId?.english : subjectId?.gujrati;
 
   return (
     <>
       <h1 className="mb-4 select-none text-2xl font-bold text-primary">
-        {language === "English" ? subjectTitle.english : subjectTitle.gujrati}
+        {language === "English" ? subjectTitle?.english : subjectTitle?.gujrati}
       </h1>
 
-      {/* Only render PostContent once localStorage values are loaded and activeSubId is present */}
-      {isLoaded && activeSubId ? (
+      {activeSubId ? (
         <PostContent subId={activeSubId} />
       ) : (
-        <Loading />
+        <NoData title="No Course content available" />
       )}
     </>
   );

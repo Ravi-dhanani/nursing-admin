@@ -37,53 +37,113 @@ export default function SignInPage() {
   const router = useRouter();
   const mobileValue = watch("mobile");
 
+  // const onSubmit = async (data: FormData) => {
+  //   if (isLoading) return;
+
+  //   setIsLoading(true);
+
+  //   try {
+  //     const res = await fetch("/api/auth/sign-in", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({ mobile: data.mobile }),
+  //     });
+
+  //     const result = await res.json();
+
+  //     if (!result.success) {
+  //       toast.error(result.message);
+  //       setIsLoading(false);
+  //       return;
+  //     }
+
+  //     const dbVisitorId = result?.data?.a10_web_id;
+  //     const isNewUser = !dbVisitorId;
+
+  //     const currentDeviceId = getDeviceId();
+
+  //     if (dbVisitorId && dbVisitorId !== currentDeviceId) {
+  //       toast.error("You are already logged in on another device");
+  //       setIsLoading(false);
+  //       return;
+  //     }
+
+  //     document.cookie = `visitorId=${currentDeviceId}; path=/; max-age=86400; SameSite=Lax; Secure`;
+
+  //     if (isNewUser) {
+  //       await fetch("/api/auth/update-visitor", {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({
+  //           objectId: result.data.objectId,
+  //           visitorId: currentDeviceId,
+  //           a9_device_id: "APP",
+  //         }),
+  //       });
+
+  //       const sendOtp = await fetch("/api/auth/send-otp", {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({ mobile: data.mobile }),
+  //       });
+
+  //       const otpResult = await sendOtp.json();
+
+  //       if (otpResult.success === true) {
+  //         toast.error(otpResult.message || "Failed to send OTP");
+  //         setIsLoading(false);
+  //         return;
+  //       }
+
+  //       if (otpResult?.data?.UserId) {
+  //         localStorage.setItem("userId", JSON.stringify(otpResult.data.UserId));
+  //         localStorage.setItem("mobileNo", JSON.stringify(data.mobile));
+  //       }
+
+  //       localStorage.setItem("user", JSON.stringify(result.data));
+
+  //       toast.success("OTP sent successfully");
+  //       router.push("/auth/verify");
+  //       return;
+  //     }
+
+  //     if (!result?.data?.a10_web_id) {
+  //       document.cookie = `isVerified=false; path=/; max-age=86400; SameSite=Lax; Secure`;
+  //     } else {
+  //       document.cookie = `isVerified=true; path=/; max-age=86400; SameSite=Lax; Secure`;
+  //     }
+
+  //     localStorage.setItem("user", JSON.stringify(result.data));
+
+  //     toast.success("Sign In successfully");
+  //     router.push("/courses");
+  //   } catch (error) {
+  //     toast.error("Something went wrong");
+  //     setIsLoading(false);
+  //   }
+  // };
+
   const onSubmit = async (data: FormData) => {
     if (isLoading) return;
-
     setIsLoading(true);
 
     try {
-      const res = await fetch("/api/auth/sign-in", {
+      // Step 1: Check if user exists
+      const checkRes = await fetch("/api/auth/user-exits", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ mobile: data.mobile }),
       });
 
-      const result = await res.json();
+      const checkResult = await checkRes.json();
 
-      if (!result.success) {
-        toast.error(result.message);
-        setIsLoading(false);
-        return;
-      }
-
-      const dbVisitorId = result?.data?.a10_web_id;
-      const isNewUser = !dbVisitorId;
-
-      const currentDeviceId = getDeviceId();
-
-      if (dbVisitorId && dbVisitorId !== currentDeviceId) {
-        toast.error("You are already logged in on another device");
-        setIsLoading(false);
-        return;
-      }
-
-      document.cookie = `visitorId=${currentDeviceId}; path=/; max-age=86400; SameSite=Lax; Secure`;
-
-      if (isNewUser) {
-        await fetch("/api/auth/update-visitor", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            objectId: result.data.objectId,
-            visitorId: currentDeviceId,
-          }),
-        });
-
+      if (checkResult.exists === false) {
         const sendOtp = await fetch("/api/auth/send-otp", {
           method: "POST",
           headers: {
@@ -105,24 +165,47 @@ export default function SignInPage() {
           localStorage.setItem("mobileNo", JSON.stringify(data.mobile));
         }
 
-        localStorage.setItem("user", JSON.stringify(result.data));
+        document.cookie = `isVerified=false; path=/; max-age=86400; SameSite=Lax; Secure`;
 
         toast.success("OTP sent successfully");
         router.push("/auth/verify");
-        return;
-      }
-
-      if (!result?.data?.a10_web_id) {
-        document.cookie = `isVerified=false; path=/; max-age=86400; SameSite=Lax; Secure`;
       } else {
+        const res = await fetch("/api/auth/sign-in", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ mobile: data.mobile }),
+        });
+
+        const result = await res.json();
+
+        if (!result.success) {
+          toast.error(result.message);
+          setIsLoading(false);
+          return;
+        }
+
+        const dbVisitorId = result?.data?.a10_web_id;
+
+        const currentDeviceId = getDeviceId();
+
+        if (dbVisitorId && dbVisitorId !== currentDeviceId) {
+          toast.error("You are already logged in on another device");
+          setIsLoading(false);
+          return;
+        }
+
+        document.cookie = `visitorId=${currentDeviceId}; path=/; max-age=86400; SameSite=Lax; Secure`;
         document.cookie = `isVerified=true; path=/; max-age=86400; SameSite=Lax; Secure`;
+
+        localStorage.setItem("user", JSON.stringify(result.data));
+
+        toast.success("Sign In successfully");
+        router.push("/courses");
       }
-
-      localStorage.setItem("user", JSON.stringify(result.data));
-
-      toast.success("Sign In successfully");
-      router.push("/courses");
     } catch (error) {
+      console.error("sign-in error:", error);
       toast.error("Something went wrong");
       setIsLoading(false);
     }

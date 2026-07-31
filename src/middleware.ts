@@ -19,8 +19,8 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  if (visitorId && !isVerified) {
-    if (!isVerifyRoute) {
+  if (!visitorId) {
+    if (!isVerifyRoute && !visitorId) {
       return NextResponse.redirect(new URL("/auth/verify", request.url));
     }
     return NextResponse.next();
